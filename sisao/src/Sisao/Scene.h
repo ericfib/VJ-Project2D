@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Menu.h"
 
 
 // Scene contains all the entities of our game.
