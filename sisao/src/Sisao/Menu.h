@@ -2,19 +2,31 @@
 #define _MENU_INCLUDE
 
 #include <string>
+#include <glm/glm.hpp>
 #include "Text.h"
+#include "ShaderProgram.h"
 
 class Menu
 {
 public:
-	void init();
-	void update(int deltatime);
-	void render();
-		
+	Menu();
+	~Menu();
+
+	void initTitle(ShaderProgram& shaderProgram);
+	void updateTitle(int deltatime);
+	void updateInstructions(int deltatime);
+	void renderTitle();
+	void renderInstructions();
+
 private:
-	Text *title, *instructions;
+	Text *title, *instructions, *button;
+	TexturedQuad *background;
+	Texture tex_bg;
+	ShaderProgram tx_prog;
+	glm::mat4 projection;
 
 };
 
 
 #endif // _MENU_INCLUDE
+
