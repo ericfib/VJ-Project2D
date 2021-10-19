@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #include "Scene.h"
 #include "Game.h"
 
@@ -20,9 +22,9 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	if(map != NULL)
+	if (map != NULL)
 		delete map;
-	if(player != NULL)
+	if (player != NULL)
 		delete player;
 }
 
@@ -32,6 +34,9 @@ void Scene::init()
 	initShaders();
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
+	menu = new Menu();
+	currentState = TITLE;
+	menu->initTitle(texProgram);
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
@@ -42,7 +47,20 @@ void Scene::init()
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
-	player->update(deltaTime);
+	switch (currentState) {
+	case LOADING:
+		break;
+	case TITLE:
+		menu->updateTitle(deltaTime);
+		break;
+	case LEVEL:
+		player->update(deltaTime);
+		break;
+	case CREDITS:
+		break;
+	case INSTRUCTIONS:
+		break;
+	}
 }
 
 void Scene::render()
@@ -55,8 +73,25 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	map->render();
-	player->render();
+
+	switch (currentState) {
+
+	case LOADING:
+		break;
+	case TITLE:
+		menu->renderTitle();
+		break;
+	case LEVEL:
+		map->render();
+		player->render();
+		break;
+	case CREDITS:
+		break;
+	case INSTRUCTIONS:
+		menu->renderInstructions();
+		break;
+	}
+
 }
 
 void Scene::initShaders()
@@ -64,13 +99,13 @@ void Scene::initShaders()
 	Shader vShader, fShader;
 
 	vShader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
-	if(!vShader.isCompiled())
+	if (!vShader.isCompiled())
 	{
 		cout << "Vertex Shader Error" << endl;
 		cout << "" << vShader.log() << endl << endl;
 	}
 	fShader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
-	if(!fShader.isCompiled())
+	if (!fShader.isCompiled())
 	{
 		cout << "Fragment Shader Error" << endl;
 		cout << "" << fShader.log() << endl << endl;
@@ -79,7 +114,7 @@ void Scene::initShaders()
 	texProgram.addShader(vShader);
 	texProgram.addShader(fShader);
 	texProgram.link();
-	if(!texProgram.isLinked())
+	if (!texProgram.isLinked())
 	{
 		cout << "Shader Linking Error" << endl;
 		cout << "" << texProgram.log() << endl << endl;
@@ -88,6 +123,32 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
+
+
+void Scene::changeState(int state) {
+	switch (state) {
+	case 1:
+		currentState = TITLE;
+		break;
+
+	case 2:
+		currentState = LEVEL;
+		break;
+
+	case 3:
+		currentState = CREDITS;
+		break;
+
+	case 4:
+		currentState = CREDITS;
+		break;
+	}
+	render();
+}
+
+
+
+
 
 
 

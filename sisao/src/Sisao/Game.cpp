@@ -67,7 +67,9 @@ bool Game::getSpecialKey(int key) const
 	return specialKeys[key];
 }
 
-
+void Game::changeScene(int state) {
+	scene.changeState(state);
+}
 
 
 

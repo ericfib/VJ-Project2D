@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Menu.h"
 
 
 // Scene contains all the entities of our game.
@@ -22,19 +23,22 @@ public:
 	void init();
 	void update(int deltaTime);
 	void render();
+	void changeState(int state);
 
 private:
 	void initShaders();
+	enum State { LOADING, TITLE, LEVEL, CREDITS, INSTRUCTIONS };
 
 private:
 	TileMap *map;
 	Player *player;
+	Menu *menu;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+	State currentState;
 
 };
 
 
 #endif // _SCENE_INCLUDE
-
