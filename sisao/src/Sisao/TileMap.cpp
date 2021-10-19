@@ -48,9 +48,9 @@ void TileMap::free()
 bool TileMap::loadLevel(const string &levelFile)
 {
 	ifstream fin;
-	string line, tilesheetFile;
+	string line, tilesheetFile, tile;
 	stringstream sstream;
-	char tile;
+	char c1, c2;
 	
 	fin.open(levelFile.c_str());
 	if(!fin.is_open())
@@ -82,13 +82,18 @@ bool TileMap::loadLevel(const string &levelFile)
 	{
 		for(int i=0; i<mapSize.x; i++)
 		{
-			fin.get(tile);
-			if(tile == ' ')
+			tile = "";
+			fin.get(c1);
+			tile.push_back(c1);
+			fin.get(c2);
+			tile.push_back(c2);
+			if(tile == "  ")
 				map[j*mapSize.x+i] = 0;
 			else
-				map[j*mapSize.x+i] = tile - int('0');
+				map[j*mapSize.x+i] = stoi(tile);
 		}
-		fin.get(tile);
+		fin.get(c1);
+		int i = 2;
 #ifndef _WIN32
 		fin.get(tile);
 #endif
