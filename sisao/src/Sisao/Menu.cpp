@@ -54,7 +54,7 @@ void Menu::renderTitle() {
 	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
 
 	tx_prog.setUniformMatrix4f("modelview", modelview);
-	//background->render(tex_bg);
+	background->render(tex_bg);
 
 	title2.render("Videogames!!!", glm::vec2(10, 480 - 20), 32, glm::vec4(1, 1, 1, 1));
 	title.render("aaaaaaaaaa", glm::vec2(10, 340), 32, glm::vec4(1, 1, 1, 0));
