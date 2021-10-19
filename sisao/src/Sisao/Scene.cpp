@@ -52,11 +52,9 @@ void Scene::update(int deltaTime)
 		break;
 	case TITLE:
 		menu->updateTitle(deltaTime);
-
 		break;
 	case LEVEL:
 		player->update(deltaTime);
-
 		break;
 	case CREDITS:
 		break;

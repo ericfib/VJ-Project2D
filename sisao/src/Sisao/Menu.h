@@ -13,13 +13,14 @@ public:
 	~Menu();
 
 	void initTitle(ShaderProgram& shaderProgram);
+	void initInstructions(ShaderProgram& shaderProgram);
 	void updateTitle(int deltatime);
 	void updateInstructions(int deltatime);
 	void renderTitle();
 	void renderInstructions();
 
 private:
-	Text *title, *instructions, *button;
+	Text title, title2, *instructions, *button;
 	TexturedQuad *background;
 	Texture tex_bg;
 	ShaderProgram tx_prog;
