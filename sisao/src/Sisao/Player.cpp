@@ -17,8 +17,9 @@ enum PlayerAnims
 };
 
 
-void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
+void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert)
 {
+	inverted = invert;
 	bJumping = false;
 	float x = 0.21;
 	float y = 0.084;
@@ -112,11 +113,14 @@ void Player::update(int deltaTime)
 			posPlayer.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
 			if(jumpAngle > 90)
 				bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+			if (jumpAngle < 90) {
+				bJumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+			}
 		}
 	}
 	else
 	{
-		posPlayer.y += FALL_STEP;
+		posPlayer.y += FALL_STEP*inverted;
 		if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
 		else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(STAND_RIGHT);
 		if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))

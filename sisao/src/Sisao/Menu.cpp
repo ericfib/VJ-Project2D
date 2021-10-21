@@ -29,7 +29,7 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	tex_bg.loadFromFile("images/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
 	tex_bg.setMagFilter(GL_NEAREST);
 	title.init("fonts/ARCADECLASSIC.ttf");
-	title2.init("fonts/Opensans-regular.ttf");
+	
 }
 
 void Menu::initInstructions(ShaderProgram& texProgram) {
@@ -56,7 +56,6 @@ void Menu::renderTitle() {
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	background->render(tex_bg);
 
-	title2.render("Videogames!!!", glm::vec2(10, 480 - 20), 32, glm::vec4(1, 1, 1, 1));
 	title.render("aaaaaaaaaa", glm::vec2(10, 340), 32, glm::vec4(1, 1, 1, 0));
 
 }
