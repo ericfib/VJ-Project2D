@@ -44,7 +44,7 @@ void Scene::init()
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
 	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1);
 	player->setPosition(glm::vec2(16 * map->getTileSize(), 11 * map->getTileSize()));
-	player2->setPosition(glm::vec2(16 * map->getTileSize(), 13 * map->getTileSize()));
+	player2->setPosition(glm::vec2(16 * map->getTileSize(), 14 * map->getTileSize()));
 	player->setTileMap(map);
 	player2->setTileMap(map);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
