@@ -20,8 +20,7 @@ public:
 	void renderInstructions();
 
 private:
-	Text title, title2, *instructions, *button;
-	TexturedQuad *background;
+	TexturedQuad *background, *title;
 	Texture tex_bg;
 	ShaderProgram tx_prog;
 	glm::mat4 projection;

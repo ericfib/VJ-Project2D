@@ -16,7 +16,7 @@ Menu::Menu() {
 
 Menu::~Menu() {
 	if (instructions) delete instructions;
-	if (button) delete button;
+	if (title) delete button;
 	if (background) delete background;
 }
 
@@ -55,9 +55,6 @@ void Menu::renderTitle() {
 
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	background->render(tex_bg);
-
-	title.render("aaaaaaaaaa", glm::vec2(10, 340), 32, glm::vec4(1, 1, 1, 0));
-
 }
 
 void Menu::renderInstructions() {
