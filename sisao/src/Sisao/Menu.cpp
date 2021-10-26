@@ -8,27 +8,39 @@
 
 
 Menu::Menu() {
-	instructions = nullptr;
-	button = nullptr;
-	background = nullptr;
-	new Text();
+
+	for (int i = 0; i < 2; i++) {
+		tex_quad[i] = nullptr;
+	}
 }
 
 Menu::~Menu() {
-	if (instructions) delete instructions;
-	if (title) delete button;
-	if (background) delete background;
+	for (int i = 0; i < 2; i++) {
+		if (tex_quad[i]) delete tex_quad[i];
+	}
 }
 
 void Menu::initTitle(ShaderProgram& texProgram) {
 	tx_prog = texProgram;
 	glm::vec2 geom[2] = { glm::vec2(0.f, 0.f), glm::vec2(640.f, 480.f) };
 	glm::vec2 texCoords[2] = { glm::vec2(0.f, 0.f), glm::vec2(1.f, 1.f) };
+	tex_quad[0] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
-	background = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
-	tex_bg.loadFromFile("images/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
-	tex_bg.setMagFilter(GL_NEAREST);
-	title.init("fonts/ARCADECLASSIC.ttf");
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(256.f, 116.f);
+	texCoords[0] = glm::vec2(0.f,0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad[1] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(256.f, 32.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad[2] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+
+	tex_bg[0].loadFromFile("images/menu/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
+	tex_bg[0].setMagFilter(GL_NEAREST);
+	tex_bg[1].loadFromFile("images/menu/title3.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[1].setMagFilter(GL_NEAREST);
+	tex_bg[2].loadFromFile("images/menu/press_to_play.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[2].setMagFilter(GL_NEAREST);
 	
 }
 
@@ -43,7 +55,7 @@ void Menu::updateTitle(int deltatime) {
 }
 
 void Menu::updateInstructions(int deltatime) {
-
+	currentTime = deltatime;
 }
 
 void Menu::renderTitle() {
@@ -54,7 +66,20 @@ void Menu::renderTitle() {
 	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
 
 	tx_prog.setUniformMatrix4f("modelview", modelview);
-	background->render(tex_bg);
+	tex_quad[0]->render(tex_bg[0]);
+
+	tx_prog.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+
+	modelview = glm::translate(modelview, glm::vec3(192.f, 64.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad[1]->render(tex_bg[1]);
+
+
+	modelview = glm::translate(modelview, glm::vec3(192.f, 400.f, 0.f));
+	//modelview = glm::scale(modelview, glm::vec3(sin((currentTime/500.f) / 2 * 0.75f) + 0.75f / 2 + 0.25f, sin((currentTime / 500.f) / 2 * 0.75f) + 0.75f / 2 + 0.25f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(-192.f, -64.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad[2]->render(tex_bg[2]);
 }
 
 void Menu::renderInstructions() {
