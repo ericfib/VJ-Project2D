@@ -20,6 +20,7 @@ public:
 	void updateInstructions(int deltatime);
 	void renderTitle();
 	void renderInstructions();
+	void render_bg();
 
 private:
 	TexturedQuad *tex_quad[3];

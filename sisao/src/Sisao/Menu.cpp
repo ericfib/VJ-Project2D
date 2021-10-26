@@ -87,3 +87,13 @@ void Menu::renderInstructions() {
 }
 
 
+void Menu::render_bg() {
+	glm::mat4 modelview;
+
+	modelview = glm::mat4(1.0f);
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad[0]->render(tex_bg[0]);
+}
