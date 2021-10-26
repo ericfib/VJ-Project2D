@@ -6,6 +6,8 @@
 #include "Text.h"
 #include "ShaderProgram.h"
 
+
+
 class Menu
 {
 public:
@@ -20,11 +22,11 @@ public:
 	void renderInstructions();
 
 private:
-	Text title, title2, *instructions, *button;
-	TexturedQuad *background;
-	Texture tex_bg;
+	TexturedQuad *tex_quad[3];
+	Texture tex_bg[3];
 	ShaderProgram tx_prog;
 	glm::mat4 projection;
+	int currentTime;
 
 };
 
