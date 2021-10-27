@@ -35,18 +35,14 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/levelTest.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	player = new Player();
-	player2 = new Player();
-	menu = new Menu();
+
 	currentState = TITLE;
+	currentLevel = 1;
+	loadlevel(currentLevel);
+
+	menu = new Menu();
 	menu->initTitle(texProgram);
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
-	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1);
-	player->setPosition(glm::vec2(16 * map->getTileSize(), 11 * map->getTileSize()));
-	player2->setPosition(glm::vec2(16 * map->getTileSize(), 14 * map->getTileSize()));
-	player->setTileMap(map);
-	player2->setTileMap(map);
+	
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	currentTime = 0.0f;
 }
@@ -54,6 +50,7 @@ void Scene::init()
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
+
 	switch (currentState) {
 	case LOADING:
 		break;
@@ -69,6 +66,16 @@ void Scene::update(int deltaTime)
 	case INSTRUCTIONS:
 		break;
 	}
+
+	if (Game::instance().getSpecialKey(GLUT_KEY_F1)) {
+		currentLevel = 1;
+		loadlevel(currentLevel);
+	}
+	else if (Game::instance().getSpecialKey(GLUT_KEY_F2)) {
+		currentLevel = 2;
+		loadlevel(currentLevel);
+	}
+	
 }
 
 void Scene::render()
@@ -156,6 +163,19 @@ void Scene::changeState(int state) {
 	render();
 }
 
+void Scene::loadlevel(int level) {
+	string lvl = std::to_string(level);
+	map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+
+	player = new Player();
+	player2 = new Player();
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
+	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1);
+	player->setPosition(glm::vec2(16 * map->getTileSize(), 11 * map->getTileSize()));
+	player2->setPosition(glm::vec2(16 * map->getTileSize(), 14 * map->getTileSize()));
+	player->setTileMap(map);
+	player2->setTileMap(map);
+}
 
 
 

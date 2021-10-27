@@ -43,6 +43,7 @@ public:
 	bool getSpecialKey(int key) const;
 
 	void changeScene(int state);
+	void changeLevel(int level);
 
 private:
 	bool bPlay;                       // Continue to play game?

@@ -24,6 +24,7 @@ public:
 	void update(int deltaTime);
 	void render();
 	void changeState(int state);
+	void loadlevel(int level);
 
 private:
 	void initShaders();
@@ -38,7 +39,7 @@ private:
 	float currentTime;
 	glm::mat4 projection;
 	State currentState;
-
+	int currentLevel;
 };
 
 

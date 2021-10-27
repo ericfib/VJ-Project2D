@@ -71,5 +71,7 @@ void Game::changeScene(int state) {
 	scene.changeState(state);
 }
 
-
+void Game::changeLevel(int level) {
+	scene.loadlevel(level);
+}
 
