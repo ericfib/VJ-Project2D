@@ -174,15 +174,15 @@ void Scene::loadlevel(int level) {
 
 	map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	posplayer1 = map->getPosPlayer(1);
-	posplayer1 = map->getPosPlayer(2);
+	posplayer2 = map->getPosPlayer(2);
 	tileSize = map->getTileSize();
 
 	player = new Player();
 	player2 = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
-	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1);
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1, currentLevel);
+	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1, currentLevel);
 
-	player->setPosition(glm::vec2(posplayer1.first * tileSize, posplayer1.second * tileSize));
+	player->setPosition(glm::vec2(posplayer1.first * tileSize, (posplayer1.second * tileSize) - 32));
 	player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
 	player->setTileMap(map);
 	player2->setTileMap(map);

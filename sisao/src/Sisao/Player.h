@@ -14,7 +14,7 @@ class Player
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert);
+	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert, int currentLevel);
 	void update(int deltaTime);
 	void render();
 	
@@ -23,6 +23,7 @@ public:
 	
 private:
 	bool bJumping;
+	int currentLevel;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY, inverted;
 	Texture spritesheet;

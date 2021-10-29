@@ -17,8 +17,9 @@ enum PlayerAnims
 };
 
 
-void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert)
-{
+void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert, int lvl)
+{	
+	currentLevel = lvl;
 	inverted = invert;
 	bJumping = false;
 	float x = 0.19;
@@ -71,6 +72,14 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
+	int tilesize = map->getTileSize();
+
+	//death by fall
+	if (((posPlayer.y - (28*inverted)) / tilesize) == 14) {
+		//sprite->changeAnimation(DIE);
+		Game::instance().changeLevel(currentLevel);
+	}
+
 	if(Game::instance().getSpecialKey(GLUT_KEY_LEFT))
 	{
 		if (bJumping && sprite->animation() != JUMP_LEFT) sprite->changeAnimation(JUMP_LEFT);
