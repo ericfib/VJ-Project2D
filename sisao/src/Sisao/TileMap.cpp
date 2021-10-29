@@ -89,6 +89,17 @@ bool TileMap::loadLevel(const string &levelFile)
 			tile.push_back(c2);
 			if(tile == "  ")
 				map[j*mapSize.x+i] = 0;
+			//barrier = ba, cactus = ct, capsa = cp, interruptor = it
+			else if (tile == "ba" || tile == "ct" || tile == "cp" || tile == "it") {
+				map[j*mapSize.x + i] = 0;
+				dynamic_objects.push_back(make_pair(tile, make_pair(i, j)));
+			}
+			//p1 = player 1, p2 = player 2 o invertit
+			else if (tile == "p1" || tile == "p2") {
+				map[j*mapSize.x + i] = 0;
+				players.push_back(make_pair(tile, make_pair(i, j)));
+			}
+
 			else
 				map[j*mapSize.x+i] = stoi(tile);
 		}

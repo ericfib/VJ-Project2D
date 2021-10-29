@@ -75,6 +75,10 @@ void Scene::update(int deltaTime)
 		currentLevel = 2;
 		loadlevel(currentLevel);
 	}
+	else if (Game::instance().getSpecialKey(GLUT_KEY_F3)) {
+		currentLevel = 3;
+		loadlevel(currentLevel);
+	}
 	
 }
 
@@ -165,14 +169,21 @@ void Scene::changeState(int state) {
 
 void Scene::loadlevel(int level) {
 	string lvl = std::to_string(level);
+	pair<int, int> posplayer1, posplayer2;
+	int tileSize;
+
 	map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	posplayer1 = map->getPosPlayer(1);
+	posplayer1 = map->getPosPlayer(2);
+	tileSize = map->getTileSize();
 
 	player = new Player();
 	player2 = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
 	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1);
-	player->setPosition(glm::vec2(16 * map->getTileSize(), 11 * map->getTileSize()));
-	player2->setPosition(glm::vec2(16 * map->getTileSize(), 14 * map->getTileSize()));
+
+	player->setPosition(glm::vec2(posplayer1.first * tileSize, posplayer1.second * tileSize));
+	player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
 	player->setTileMap(map);
 	player2->setTileMap(map);
 }
