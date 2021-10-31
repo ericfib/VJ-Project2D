@@ -30,6 +30,7 @@ public:
 	int getTileSize() const { return tileSize; }
 
 	pair<int, int> getPosPlayer(int p) { return (p == 1) ? players[0].second : players[1].second;}
+	vector<pair<string, pair<int, int>>> getDynamicObjects() { return dynamic_objects; }
 
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;

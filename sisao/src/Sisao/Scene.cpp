@@ -37,7 +37,7 @@ void Scene::init()
 	initShaders();
 
 	currentState = TITLE;
-	currentLevel = 1;
+	currentLevel = 2;
 	loadlevel(currentLevel);
 
 	menu = new Menu();
@@ -60,6 +60,10 @@ void Scene::update(int deltaTime)
 	case LEVEL:
 		player->update(deltaTime);
 		player2->update(deltaTime);
+
+		for (int i = 0; i < d_objects.size(); i++) {
+			d_objects[i]->update(deltaTime);
+		}
 		break;
 	case CREDITS:
 		break;
@@ -105,6 +109,11 @@ void Scene::render()
 		map->render();
 		player->render();
 		player2->render();
+
+		for (int i = 0; i < d_objects.size(); i++) {
+			d_objects[i]->render();
+		}
+
 		break;
 	case CREDITS:
 		break;
@@ -168,6 +177,8 @@ void Scene::changeState(int state) {
 }
 
 void Scene::loadlevel(int level) {
+	//pop de d_objects[]
+
 	string lvl = std::to_string(level);
 	pair<int, int> posplayer1, posplayer2;
 	int tileSize;
@@ -176,6 +187,8 @@ void Scene::loadlevel(int level) {
 	posplayer1 = map->getPosPlayer(1);
 	posplayer2 = map->getPosPlayer(2);
 	tileSize = map->getTileSize();
+
+	initDynamicObjects();
 
 	player = new Player();
 	player2 = new Player();
@@ -189,7 +202,29 @@ void Scene::loadlevel(int level) {
 }
 
 
+void Scene::initDynamicObjects() {
+	vector<pair<string, pair<int, int>>> aux;
+	aux = map->getDynamicObjects();
+	int tileSize = map->getTileSize();
 
+	for (int i = 0; i < aux.size(); i++) {
+		if (aux[i].first == "f1") {
+			Flag* f1 = new Flag();
+			f1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel);
+			f1->setPosition(glm::vec2(aux[i].second.first * tileSize, (aux[i].second.second * tileSize) - 16));
+
+			d_objects.push_back(f1);
+		}
+		else if (aux[i].first == "ct") {
+		}
+		else if (aux[i].first == "ba") {
+		}
+		else if (aux[i].first == "it") {
+		}
+		else if (aux[i].first == "cp") {
+		}
+	}
+}
 
 
 
