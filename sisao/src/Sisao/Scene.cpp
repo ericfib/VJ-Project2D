@@ -62,8 +62,11 @@ void Scene::update(int deltaTime)
 		player2->update(deltaTime);
 
 		for (int i = 0; i < d_objects.size(); i++) {
-			d_objects[i]->update(deltaTime);
+			d_objects[i].second->update(deltaTime);
 		}
+
+		levelCtrl->update(deltaTime);
+
 		break;
 	case CREDITS:
 		break;
@@ -107,12 +110,13 @@ void Scene::render()
 	case LEVEL:
 		menu->render_bg();
 		map->render();
-		player->render();
-		player2->render();
 
 		for (int i = 0; i < d_objects.size(); i++) {
-			d_objects[i]->render();
+			d_objects[i].second->render();
 		}
+
+		player->render();
+		player2->render();
 
 		break;
 	case CREDITS:
@@ -194,15 +198,18 @@ void Scene::loadlevel(int level) {
 	player2 = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1, currentLevel);
 	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1, currentLevel);
-
 	player->setPosition(glm::vec2(posplayer1.first * tileSize, (posplayer1.second * tileSize) - 32));
 	player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
 	player->setTileMap(map);
 	player2->setTileMap(map);
+
+	levelCtrl = new LevelCtrl();
+	levelCtrl->init(player, player2, d_objects, currentLevel);
 }
 
 
 void Scene::initDynamicObjects() {
+	d_objects.clear();
 	vector<pair<string, pair<int, int>>> aux;
 	aux = map->getDynamicObjects();
 	int tileSize = map->getTileSize();
@@ -210,10 +217,17 @@ void Scene::initDynamicObjects() {
 	for (int i = 0; i < aux.size(); i++) {
 		if (aux[i].first == "f1") {
 			Flag* f1 = new Flag();
-			f1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel);
-			f1->setPosition(glm::vec2(aux[i].second.first * tileSize, (aux[i].second.second * tileSize) - 16));
+			f1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, 1);
+			f1->setPosition(glm::vec2(aux[i].second.first * tileSize, (aux[i].second.second * tileSize) - 28));
 
-			d_objects.push_back(f1);
+			d_objects.push_back(make_pair(aux[i].first, f1));
+		}
+		else if (aux[i].first == "f2") {
+			Flag* f2 = new Flag();
+			f2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, -1);
+			f2->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
+
+			d_objects.push_back(make_pair(aux[i].first, f2));
 		}
 		else if (aux[i].first == "ct") {
 		}

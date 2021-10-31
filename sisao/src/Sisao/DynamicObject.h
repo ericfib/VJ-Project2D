@@ -15,6 +15,9 @@ public:
 
 	virtual void setTileMap(TileMap *tileMap) {};
 	virtual void setPosition(const glm::vec2 &pos) {};
+	virtual void setActive(bool actived) {};
+
+	virtual glm::ivec2 getPosition() { return posObject; };
 
 protected:
 

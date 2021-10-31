@@ -9,6 +9,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Menu.h"
+#include "LevelCtrl.h"
 
 
 
@@ -40,7 +41,8 @@ private:
 	Player *player;
 	Player *player2;
 	Menu *menu;
-	vector <DynamicObject* > d_objects;
+	vector <pair<string, DynamicObject*>> d_objects;
+	LevelCtrl *levelCtrl;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;

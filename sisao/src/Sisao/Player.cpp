@@ -24,7 +24,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 	bJumping = false;
 	death = false;
 	float x = 0.19;
-	float y = 0.12;
+	float y = 0.118;
 	float baseY = 0.03;
 	float baseX = 0.063;
 	if (invert == 1) spritesheet.loadFromFile("images/player1-sprite.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -98,7 +98,7 @@ void Player::update(int deltaTime)
 
 	if (death) {
 		deathTime += deltaTime;
-		if (deathTime > 800) Game::instance().changeLevel(currentLevel);
+		if (deathTime > 1200) Game::instance().changeLevel(currentLevel);
 	}
 
 	else {
@@ -199,7 +199,7 @@ void Player::update(int deltaTime)
 
 void Player::render()
 {
-	if (!death || deathTime < 120) sprite->render();
+	if (!death || deathTime <= 535) sprite->render();
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -211,6 +211,10 @@ void Player::setPosition(const glm::vec2 &pos)
 {
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+}
+
+glm::ivec2 Player::getPosition() {
+	return posPlayer;
 }
 
 
