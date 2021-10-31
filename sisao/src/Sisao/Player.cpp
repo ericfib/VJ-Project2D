@@ -64,7 +64,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 		sprite->addKeyframe(JUMP_RIGHT, glm::vec2(2 * x + 3 * baseX, 4*y + baseY * 5));
 		sprite->addKeyframe(JUMP_RIGHT, glm::vec2(3 * x + 4 * baseX, 4*y + baseY * 5));
 
-		sprite->setAnimationSpeed(DEATH, 20);
+		sprite->setAnimationSpeed(DEATH, 15);
 		sprite->addKeyframe(DEATH, glm::vec2(baseX, 5 * y + baseY * 6));
 		sprite->addKeyframe(DEATH, glm::vec2(x + 2 * baseX, 5 * y + baseY * 6));
 		sprite->addKeyframe(DEATH, glm::vec2(2 * x + 3 * baseX, 5 * y + baseY * 6));
@@ -84,9 +84,13 @@ void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
 	int tilesize = map->getTileSize();
+	float posaux = posPlayer.y;
+	if (!inverted) {
+		posaux += 32;
+	}
 
 	//death by fall
-	if (((posPlayer.y - (28*inverted)) / tilesize) == 14) {
+	if (!death && (posaux / tilesize) == 14) {
 		death = true;
 		deathTime = 0;
 		sprite->changeAnimation(DEATH);
@@ -94,8 +98,10 @@ void Player::update(int deltaTime)
 
 	if (death) {
 		deathTime += deltaTime;
-		if (deathTime > 100) Game::instance().changeLevel(currentLevel);
+		if (deathTime > 800) Game::instance().changeLevel(currentLevel);
 	}
+
+	else {
 
 
 		if (Game::instance().getSpecialKey(GLUT_KEY_LEFT))
@@ -185,6 +191,7 @@ void Player::update(int deltaTime)
 					else sprite->changeAnimation(JUMP_RIGHT);
 				}
 			}
+		}
 	}
 	
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
@@ -192,7 +199,7 @@ void Player::update(int deltaTime)
 
 void Player::render()
 {
-	sprite->render();
+	if (!death || deathTime < 120) sprite->render();
 }
 
 void Player::setTileMap(TileMap *tileMap)
