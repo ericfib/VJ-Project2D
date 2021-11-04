@@ -23,8 +23,8 @@ public:
 	void render_bg();
 
 private:
-	TexturedQuad *tex_quad[3];
-	Texture tex_bg[3];
+	TexturedQuad *tex_quad[5];
+	Texture tex_bg[5];
 	ShaderProgram tx_prog;
 	glm::mat4 projection;
 	int currentTime;

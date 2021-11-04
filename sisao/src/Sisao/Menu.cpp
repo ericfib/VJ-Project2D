@@ -34,6 +34,13 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
 	tex_quad[2] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(1280.f, 480.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(2.f, 1.f);
+	tex_quad[3] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(640.f, 240.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad[4] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
 	tex_bg[0].loadFromFile("images/menu/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
 	tex_bg[0].setMagFilter(GL_NEAREST);
@@ -41,7 +48,10 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	tex_bg[1].setMagFilter(GL_NEAREST);
 	tex_bg[2].loadFromFile("images/menu/press_to_play.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	tex_bg[2].setMagFilter(GL_NEAREST);
-	
+	tex_bg[3].loadFromFile("images/menu/bg_31.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[3].setMagFilter(GL_NEAREST);
+	tex_bg[4].loadFromFile("images/menu/water.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[4].setMagFilter(GL_NEAREST);
 }
 
 void Menu::initInstructions(ShaderProgram& texProgram) {
@@ -94,6 +104,13 @@ void Menu::render_bg() {
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
 
+	
+	//modelview = glm::translate(modelview, glm::vec3(0.f, 0.f, 0.f));
 	tx_prog.setUniformMatrix4f("modelview", modelview);
-	tex_quad[0]->render(tex_bg[0]);
+	tex_quad[3]->render(tex_bg[3]);
+
+	/*
+	modelview = glm::translate(modelview, glm::vec3(0.f, 240.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad[4]->render(tex_bg[4]);*/
 }
