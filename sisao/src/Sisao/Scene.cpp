@@ -106,7 +106,9 @@ void Scene::render()
 		break;
 	case LEVEL:
 		menu->render_bg();
+		
 		map->render();
+
 		player->render();
 		player2->render();
 
