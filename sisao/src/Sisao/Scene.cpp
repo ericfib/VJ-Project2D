@@ -13,6 +13,9 @@
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 25
 
+#define CAMERA_WIDTH SCREEN_WIDTH/2
+#define CAMERA_HEIGHT SCREEN_HEIGHT/2
+
 
 Scene::Scene()
 {
@@ -36,6 +39,8 @@ void Scene::init()
 {
 	initShaders();
 
+	cameraX = cameraY = cameraVx = 0;
+
 	currentState = TITLE;
 	currentLevel = 2;
 	loadlevel(currentLevel);
@@ -51,6 +56,8 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 
+
+
 	switch (currentState) {
 	case LOADING:
 		break;
@@ -60,7 +67,7 @@ void Scene::update(int deltaTime)
 	case LEVEL:
 		player->update(deltaTime);
 		player2->update(deltaTime);
-
+		updateCameraPosition();
 		for (int i = 0; i < d_objects.size(); i++) {
 			d_objects[i]->update(deltaTime);
 		}
@@ -161,18 +168,22 @@ void Scene::changeState(int state) {
 	switch (state) {
 	case 1:
 		currentState = TITLE;
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 
 	case 2:
 		currentState = LEVEL;
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 
 	case 3:
 		currentState = CREDITS;
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 
 	case 4:
 		currentState = CREDITS;
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 	}
 	render();
@@ -228,5 +239,19 @@ void Scene::initDynamicObjects() {
 	}
 }
 
+void Scene::updateCameraPosition() {
+	pair<int,int> posplayer;
+	posplayer = map->getPosPlayer(1);
 
+	/*
+	if((jugadorX – cameraX) < (cameraWidth / 3))
+		cameraX = jugadorX - cameraWidth / 3;
+	if(((jugadorX – cameraX) > (2 * cameraWidth / 3))
+		cameraX = jugadorX – 2 * cameraWidth / 3;
+	if((jugadorY – cameraY) < (cameraHeight / 3))
+		cameraY = jugadorY - cameraHeight / 3;
+	if(((jugadorY – cameraY) > (2 * cameraHeight / 3))
+		cameraY = jugadorY – 2 * cameraHeight / 3;
+	*/
+}
 

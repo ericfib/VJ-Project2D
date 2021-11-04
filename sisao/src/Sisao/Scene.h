@@ -28,6 +28,7 @@ public:
 	void render();
 	void changeState(int state);
 	void loadlevel(int level);
+	void updateCameraPosition();
 
 private:
 	void initShaders();
@@ -46,6 +47,7 @@ private:
 	glm::mat4 projection;
 	State currentState;
 	int currentLevel;
+	float maxX, maxY, minX, minY, cameraX, cameraY, cameraVx;
 };
 
 
