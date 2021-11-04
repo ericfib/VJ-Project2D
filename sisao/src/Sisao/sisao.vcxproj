@@ -12,10 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimKeyframes.h" />
+    <ClInclude Include="Barrier.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="Flag.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LevelCtrl.h" />
+    <ClInclude Include="Lever.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
@@ -28,9 +30,11 @@
     <ClInclude Include="TileMap.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Barrier.cpp" />
     <ClCompile Include="Flag.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LevelCtrl.cpp" />
+    <ClCompile Include="Lever.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Player.cpp" />

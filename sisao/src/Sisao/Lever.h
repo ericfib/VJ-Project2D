@@ -1,9 +1,9 @@
-#ifndef _FLAG_INCLUDE
-#define _FLAG_INCLUDE
+#ifndef _LEVER_INCLUDE
+#define _LEVER_INCLUDE
 
 #include "DynamicObject.h"
 
-class Flag : public DynamicObject 
+class Lever : public DynamicObject
 {
 public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int currentLevel, int invert);
@@ -15,10 +15,13 @@ public:
 	void setActive(bool actived);
 
 	glm::ivec2 getPosition();
+	int getInverted();
+
 
 private:
-	int currentLevel, activedTime;
+	int currentLevel, activedTime, inverted;
 	bool active;
 };
 
 #endif
+

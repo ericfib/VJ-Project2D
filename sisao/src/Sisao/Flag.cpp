@@ -76,18 +76,6 @@ void Flag::setActive(bool actived) {
 	active = actived;
 }
 
-bool Flag::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size) const {
-	return true;
-}
-
-bool Flag::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const {
-	return true;
-}
-
-bool Flag::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const {
-	return true;
-}
-
 glm::ivec2 Flag::getPosition() {
 	return posObject;
 }

@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "Flag.h"
+#include "Lever.h"
+#include "Barrier.h"
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"

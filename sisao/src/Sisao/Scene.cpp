@@ -213,7 +213,7 @@ void Scene::loadlevel(int level) {
 	player2 = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1, currentLevel);
 	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1, currentLevel);
-	player->setPosition(glm::vec2(posplayer1.first * tileSize, (posplayer1.second * tileSize) - 32));
+	player->setPosition(glm::vec2(posplayer1.first * tileSize, ((posplayer1.second+1) * tileSize) - 32));
 	player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
 	player->setTileMap(map);
 	player2->setTileMap(map);
@@ -233,7 +233,7 @@ void Scene::initDynamicObjects() {
 		if (aux[i].first == "f1") {
 			Flag* f1 = new Flag();
 			f1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, 1);
-			f1->setPosition(glm::vec2(aux[i].second.first * tileSize, (aux[i].second.second * tileSize) - 28));
+			f1->setPosition(glm::vec2(aux[i].second.first * tileSize, (((aux[i].second.second + 1) * tileSize) - 46)));
 
 			d_objects.push_back(make_pair(aux[i].first, f1));
 		}
@@ -247,8 +247,23 @@ void Scene::initDynamicObjects() {
 		else if (aux[i].first == "ct") {
 		}
 		else if (aux[i].first == "ba") {
+			Barrier* b = new Barrier();
+			b->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel);
+			if (aux[i].second.second > 18) b->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
+			else b->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second+1) * tileSize) - 64));
+			b->setTileMap(map);
+
+			d_objects.push_back(make_pair(aux[i].first, b));
 		}
-		else if (aux[i].first == "it") {
+		else if (aux[i].first == "le") {
+			int inverted = 1;
+			if (aux[i].second.second > 18) inverted = -1;
+			Lever* l = new Lever();
+			l->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, inverted);
+			if (inverted == 1) l->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second+1) * tileSize) - 30));
+			else l->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
+
+			d_objects.push_back(make_pair(aux[i].first, l));
 		}
 		else if (aux[i].first == "cp") {
 		}

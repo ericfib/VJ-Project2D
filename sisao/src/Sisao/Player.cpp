@@ -90,7 +90,8 @@ void Player::update(int deltaTime)
 	}
 
 	//death by fall
-	if (!death && (posaux / tilesize) == 14) {
+	int mid = (inverted == 1) ?  12:14 ;
+	if (!death && (posaux / tilesize) == mid) {
 		death = true;
 		deathTime = 0;
 		sprite->changeAnimation(DEATH);
@@ -146,7 +147,7 @@ void Player::update(int deltaTime)
 			}
 			else
 			{
-				posPlayer.y = int(startY - (96 * sin(3.14159f * jumpAngle / 180.f)*inverted));
+				posPlayer.y = int(startY - (50 * sin(3.14159f * jumpAngle / 180.f)*inverted));
 				if (inverted == 1) {
 					if (jumpAngle > 90)
 						bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
