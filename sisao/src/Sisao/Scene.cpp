@@ -13,10 +13,6 @@
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 25
 
-#define CAMERA_WIDTH SCREEN_WIDTH/2
-#define CAMERA_HEIGHT SCREEN_HEIGHT/2
-
-
 Scene::Scene()
 {
 	map = NULL;
@@ -39,8 +35,6 @@ void Scene::init()
 {
 	initShaders();
 
-	cameraX = cameraY = cameraVx = 0;
-
 	currentState = TITLE;
 	currentLevel = 2;
 	loadlevel(currentLevel);
@@ -48,15 +42,25 @@ void Scene::init()
 	menu = new Menu();
 	menu->initTitle(texProgram);
 	
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+	initProj();
+
+	projection = glm::ortho(left, right, bottom, top);
 	currentTime = 0.0f;
+}
+
+void Scene::initProj() {
+	valor_cam = 0;
+	left = 0.f;
+	right = float(SCREEN_WIDTH - 1);
+	top = 0.f;
+	bottom = float(SCREEN_HEIGHT - 1);
 }
 
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 
-
+	projection = glm::ortho(left, right, bottom, top);
 
 	switch (currentState) {
 	case LOADING:
@@ -65,10 +69,14 @@ void Scene::update(int deltaTime)
 		menu->updateTitle(deltaTime);
 		break;
 	case LEVEL:
+
 		levelCtrl->update(deltaTime);
+
 		player->update(deltaTime);
 		player2->update(deltaTime);
-		updateCameraPosition();
+		updateCameraPosition(deltaTime);
+		menu->updatebg(deltaTime, valor_cam);
+
 		for (int i = 0; i < d_objects.size(); i++) {
 			d_objects[i].second->update(deltaTime);
 		}
@@ -114,13 +122,12 @@ void Scene::render()
 		menu->renderTitle();
 		break;
 	case LEVEL:
-		menu->render_bg();
-		
+		menu->render_bg(valor_cam);
 		map->render();
 
 		player->render();
 		player2->render();
-
+		
 		for (int i = 0; i < d_objects.size(); i++) {
 			d_objects[i].second->render();
 		}
@@ -173,22 +180,22 @@ void Scene::changeState(int state) {
 	switch (state) {
 	case 1:
 		currentState = TITLE;
-		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+		
 		break;
 
 	case 2:
 		currentState = LEVEL;
-		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+		
 		break;
 
 	case 3:
 		currentState = CREDITS;
-		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+		
 		break;
 
 	case 4:
 		currentState = CREDITS;
-		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+		
 		break;
 	}
 	render();
@@ -196,10 +203,12 @@ void Scene::changeState(int state) {
 
 void Scene::loadlevel(int level) {
 	//pop de d_objects[]
-
+	d_objects.clear();
 	string lvl = std::to_string(level);
 	pair<int, int> posplayer1, posplayer2;
 	int tileSize;
+	initProj();
+	valor_cam = 0;
 
 	map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	posplayer1 = map->getPosPlayer(1);
@@ -212,10 +221,14 @@ void Scene::loadlevel(int level) {
 	player2 = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1, currentLevel);
 	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1, currentLevel);
+
 	player->setPosition(glm::vec2(posplayer1.first * tileSize, ((posplayer1.second+1) * tileSize) - 32));
+
 	player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
 	player->setTileMap(map);
 	player2->setTileMap(map);
+
+	mid_point_aux = get_mid_point(float(posplayer1.first * tileSize), float(posplayer2.first * tileSize));
 
 	levelCtrl = new LevelCtrl();
 	levelCtrl->init(player, player2, d_objects, currentLevel);
@@ -279,19 +292,30 @@ void Scene::initDynamicObjects() {
 	}
 }
 
-void Scene::updateCameraPosition() {
-	pair<int,int> posplayer;
-	posplayer = map->getPosPlayer(1);
+void Scene::updateCameraPosition(int deltatime) {
+	int posplayer1, posplayer2;
+	float posplayerF1, posplayerF2;
+	float players_ptx;
+	int tilesize = map->getTileSize();
+	
+	posplayer1 = player->getPosition().x;
+	posplayer2 = player2->getPosition().x;
 
-	/*
-	if((jugadorX – cameraX) < (cameraWidth / 3))
-		cameraX = jugadorX - cameraWidth / 3;
-	if(((jugadorX – cameraX) > (2 * cameraWidth / 3))
-		cameraX = jugadorX – 2 * cameraWidth / 3;
-	if((jugadorY – cameraY) < (cameraHeight / 3))
-		cameraY = jugadorY - cameraHeight / 3;
-	if(((jugadorY – cameraY) > (2 * cameraHeight / 3))
-		cameraY = jugadorY – 2 * cameraHeight / 3;
-	*/
+	posplayerF1 = float(posplayer1);
+
+	posplayerF2 = float(posplayer2);
+	
+	players_ptx = get_mid_point(posplayerF1, posplayerF2);
+	
+	valor_cam = players_ptx - mid_point_aux;
+	mid_point_aux = players_ptx;
+	
+
+ 	left += ((((left + valor_cam) <= 0)) || ((left + valor_cam) >= SCREEN_WIDTH - 1)) ? 0 : valor_cam;
+	right += ((((left + valor_cam) <= 0)) || ((left + valor_cam) >= SCREEN_WIDTH - 1)) ? 0 : valor_cam;
+
 }
 
+float Scene::get_mid_point(float p1, float p2) {
+	return ((p1 + p2) / 2);
+}
