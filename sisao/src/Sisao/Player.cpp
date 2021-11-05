@@ -91,7 +91,7 @@ void Player::update(int deltaTime)
 
 	//death by fall
 	int mid = (inverted == 1) ?  12:14 ;
-	if (!death && (posaux / tilesize) == mid) {
+	if (!death && ((inverted == 1 && (posaux / tilesize) >= mid) || ((inverted == -1 && (posaux / tilesize) <= mid)))) {
 		death = true;
 		deathTime = 0;
 		sprite->changeAnimation(DEATH);
@@ -212,6 +212,11 @@ void Player::setPosition(const glm::vec2 &pos)
 {
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+}
+
+void Player::setJumping(bool jump)
+{
+	bJumping = jump;
 }
 
 glm::ivec2 Player::getPosition() {

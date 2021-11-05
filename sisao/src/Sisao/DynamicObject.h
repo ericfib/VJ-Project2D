@@ -17,6 +17,8 @@ public:
 	virtual void setPosition(const glm::vec2 &pos) {};
 	virtual void setActive(bool actived) {};
 	virtual void setDestroyed(bool actived) {};
+	virtual void setPushLeft(bool push) {};
+	virtual void setPushRight(bool push) {};
 
 	virtual glm::ivec2 getPosition() { return posObject; };
 	virtual pair<int, int> getSize() { return make_pair(sizex, sizey); };
@@ -24,7 +26,8 @@ public:
 
 	virtual bool collisionLeft(glm::ivec2 &pos, glm::ivec2 &size) { return false; };
 	virtual bool collisionRight(glm::ivec2 &pos, glm::ivec2 &size) { return false; };
-
+	virtual bool collisionUp(glm::ivec2 &pos, glm::ivec2 &size) { return false; };
+	virtual bool collisionDown(glm::ivec2 &pos, glm::ivec2 &size) { return false; };
 
 protected:
 

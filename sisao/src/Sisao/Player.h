@@ -19,6 +19,7 @@ public:
 	void render();
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
+	void setJumping(bool jump);
 
 	glm::ivec2 getPosition();
 	

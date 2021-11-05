@@ -65,14 +65,13 @@ void Scene::update(int deltaTime)
 		menu->updateTitle(deltaTime);
 		break;
 	case LEVEL:
+		levelCtrl->update(deltaTime);
 		player->update(deltaTime);
 		player2->update(deltaTime);
 		updateCameraPosition();
 		for (int i = 0; i < d_objects.size(); i++) {
 			d_objects[i].second->update(deltaTime);
 		}
-
-		levelCtrl->update(deltaTime);
 
 		break;
 	case CREDITS:
@@ -244,8 +243,6 @@ void Scene::initDynamicObjects() {
 
 			d_objects.push_back(make_pair(aux[i].first, f2));
 		}
-		else if (aux[i].first == "ct") {
-		}
 		else if (aux[i].first == "ba") {
 			Barrier* b = new Barrier();
 			b->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel);
@@ -265,7 +262,19 @@ void Scene::initDynamicObjects() {
 
 			d_objects.push_back(make_pair(aux[i].first, l));
 		}
-		else if (aux[i].first == "cp") {
+		else if (aux[i].first == "bx") {
+			Box* bx = new Box();
+			if (aux[i].second.second > 18) {
+				bx->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, -1);
+				bx->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
+			}
+			else {
+				bx->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, 1);
+				bx->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second + 1) * tileSize) - 32));
+			}
+			bx->setTileMap(map);
+
+			d_objects.push_back(make_pair(aux[i].first, bx));
 		}
 	}
 }

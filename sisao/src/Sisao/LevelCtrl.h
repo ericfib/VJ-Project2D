@@ -15,10 +15,11 @@ public:
 private:
 	void destroyBarriers();
 
+	bool boxAux;
 	int currentLevel;
 	Player *player1, *player2;
 	DynamicObject *flag1, *flag2, *lever;
-	vector<DynamicObject*> barriers;
+	vector<DynamicObject*> barriers, boxes;
 	TileMap *map;
 };
 
