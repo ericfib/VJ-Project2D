@@ -29,7 +29,9 @@ public:
 	void render();
 	void changeState(int state);
 	void loadlevel(int level);
-	void updateCameraPosition();
+	void updateCameraPosition(int deltaTime);
+	float get_mid_point(float p1, float p2);
+	void initProj();
 
 private:
 	void initShaders();
@@ -49,7 +51,7 @@ private:
 	glm::mat4 projection;
 	State currentState;
 	int currentLevel;
-	float maxX, maxY, minX, minY, cameraX, cameraY, cameraVx;
+	float valor_cam, mid_point_aux, left, top, bottom, right;
 };
 
 
