@@ -18,17 +18,17 @@ public:
 	void initInstructions(ShaderProgram& shaderProgram);
 	void initCredits(ShaderProgram& shaderProgram);
 	void updateTitle(int deltatime);
-	void updateInstructions(int deltatime);
+	void updateInstructions(int deltatime, int previousState);
 	void updateCredits(int deltatime);
 	void updatebg(int deltatime, float cam);
 	void renderTitle();
-	void renderInstructions();
+	void renderInstructions(int valor_cam);
 	void renderCredits();
 	void render_bg(int valor_cam);
 
 private:
-	TexturedQuad *tex_quad_title[5], *tex_quad_instr[4], *tex_quad_cred[5];
-	Texture tex_bg[5], tex_instr[5], tex_cred[5];
+	TexturedQuad *tex_quad_title[5], *tex_quad_instr[8], *tex_quad_cred[5];
+	Texture tex_bg[5], tex_instr[8], tex_cred[8];
 	ShaderProgram tx_prog;
 	glm::mat4 projection;
 	int currentTime;

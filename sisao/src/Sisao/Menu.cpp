@@ -24,6 +24,8 @@ Menu::~Menu() {
 	}
 }
 
+///////////////////// TITLE /////////////////////
+
 void Menu::initTitle(ShaderProgram& texProgram) {
 	tx_prog = texProgram;
 	pos_bg = 0.f;
@@ -59,33 +61,6 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	tex_bg[4].setMagFilter(GL_NEAREST);
 }
 
-void Menu::initInstructions(ShaderProgram& texProgram) {
-
-}
-
-void Menu::initCredits(ShaderProgram& texProgram) {
-
-}
-
-void Menu::updateTitle(int deltatime) {
-	if (Game::instance().getKey(32)) {
-		Game::instance().changeScene(2);
-	}
-}
-
-void Menu::updateInstructions(int deltatime) {
-	currentTime = deltatime;
-}
-
-void Menu::updateCredits(int deltatime) {
-	currentTime = deltatime;
-}
-
-void Menu::updatebg(int deltatime, float valor_cam) {
-	currentTime += deltatime;
-	pos_bg += valor_cam;
-}
-
 void Menu::renderTitle() {
 	glm::mat4 modelview;
 
@@ -110,13 +85,106 @@ void Menu::renderTitle() {
 	tex_quad_title[2]->render(tex_bg[2]);
 }
 
-void Menu::renderInstructions() {
+void Menu::updateTitle(int deltatime) {
+	if (Game::instance().getKey(32)) {
+		Game::instance().changeScene(2);
+	}
+}
+
+///////////////////// INSTRUCTIONS /////////////////////
+
+void Menu::initInstructions(ShaderProgram& texProgram) {
+	tx_prog = texProgram;
+
+	glm::vec2 geom[2] = { glm::vec2(0.f, 0.f), glm::vec2(640.f, 480.f) };
+	glm::vec2 texCoords[2] = { glm::vec2(0.f, 0.f), glm::vec2(1.f, 1.f) };
+	tex_quad_instr[0] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+	
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(250.f, 201.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_instr[1] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+	
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(150.f, 40.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_instr[2] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(50.f, 50.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_instr[3] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+	
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(150.f, 40.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_instr[4] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+	tex_instr[0].loadFromFile("images/menu/instr/bg_black.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_instr[0].setMagFilter(GL_NEAREST);
+	tex_instr[1].loadFromFile("images/menu/instr/keys_W1.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_instr[1].setMagFilter(GL_NEAREST);
+	tex_instr[2].loadFromFile("images/menu/instr/mov.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_instr[2].setMagFilter(GL_NEAREST);
+	tex_instr[3].loadFromFile("images/menu/instr/GW.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_instr[3].setMagFilter(GL_NEAREST);
+	tex_instr[4].loadFromFile("images/menu/instr/GW.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_instr[4].setMagFilter(GL_NEAREST);
+}
+
+void Menu::renderInstructions(int valor_cam) {
+	glm::mat4 modelview;
+
+	modelview = glm::mat4(1.0f);
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	modelview = glm::translate(modelview, glm::vec3(0.f, 0.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_instr[0]->render(tex_instr[0]);
+
+	modelview = glm::translate(modelview, glm::vec3(85.f, 85.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_instr[1]->render(tex_instr[1]);
+
+	modelview = glm::translate(modelview, glm::vec3(250.f, 80.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_instr[2]->render(tex_instr[2]);
+
+	modelview = glm::translate(modelview, glm::vec3(-150.f, 120.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_instr[3]->render(tex_instr[3]);
+
+	modelview = glm::translate(modelview, glm::vec3(-150.f, 120.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_instr[3]->render(tex_instr[3]);
 
 }
+
+void Menu::updateInstructions(int deltatime, int previousState) {
+
+
+}
+
+///////////////////// CREDITS /////////////////////
+
+void Menu::initCredits(ShaderProgram& texProgram) {
+	
+
+}
+
+
+
+
+
+void Menu::updateCredits(int deltatime) {
+	currentTime += deltatime;
+}
+
+
+
 
 void Menu::renderCredits() {
 
 }
+
+///////////////////// GAME_BG /////////////////////
 
 
 void Menu::render_bg(int valor_cam) {
@@ -131,4 +199,9 @@ void Menu::render_bg(int valor_cam) {
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tex_quad_title[3]->render(tex_bg[3]);
 
+}
+
+void Menu::updatebg(int deltatime, float valor_cam) {
+	currentTime += deltatime;
+	pos_bg += valor_cam;
 }

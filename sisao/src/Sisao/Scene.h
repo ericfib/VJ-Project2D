@@ -44,16 +44,15 @@ private:
 
 private:
 	TileMap *map;
-	Player *player;
-	Player *player2;
-	Menu *menu;
+	Player *player, *player2;
+	Menu *menu, *instr;
 	vector <pair<string, DynamicObject*>> d_objects;
 	LevelCtrl *levelCtrl;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
-	State currentState;
-	int currentLevel;
+	State currentState, previousState;
+	int currentLevel, timerState;
 	float valor_cam, mid_point_aux, left, top, bottom, right;
 };
 

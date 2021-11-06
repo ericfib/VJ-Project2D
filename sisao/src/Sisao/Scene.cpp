@@ -18,6 +18,8 @@ Scene::Scene()
 	map = NULL;
 	player = NULL;
 	player2 = NULL;
+	menu = nullptr;
+	instr = nullptr;
 }
 
 Scene::~Scene()
@@ -40,7 +42,10 @@ void Scene::init()
 	loadlevel(currentLevel);
 
 	menu = new Menu();
+	instr = new Menu();
 	menu->initTitle(texProgram);
+	instr->initInstructions(texProgram);
+	
 	
 	initProj();
 
@@ -85,21 +90,51 @@ void Scene::update(int deltaTime)
 	case CREDITS:
 		break;
 	case INSTRUCTIONS:
+		instr->updateInstructions(deltaTime, previousState);
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
 		break;
 	}
 
 	if (Game::instance().getSpecialKey(GLUT_KEY_F1)) {
-		currentLevel = 1;
-		loadlevel(currentLevel);
+		if (currentState == LEVEL) {
+			currentLevel = 1;
+			loadlevel(currentLevel);
+		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_F2)) {
-		currentLevel = 2;
-		loadlevel(currentLevel);
+		if (currentState == LEVEL) {
+			currentLevel = 2;
+			loadlevel(currentLevel);
+		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_F3)) {
-		currentLevel = 3;
-		loadlevel(currentLevel);
+		if (currentState == LEVEL) {
+			currentLevel = 3;
+			loadlevel(currentLevel);
+		}
 	}
+	else if (Game::instance().getSpecialKey(GLUT_KEY_F4)) {
+		if (currentState == LEVEL) {
+			currentLevel = 4;
+			loadlevel(currentLevel);
+		}
+	}
+	else if (Game::instance().getSpecialKey(GLUT_KEY_F5)) {
+		if (currentState == LEVEL) {
+			currentLevel = 5;
+			loadlevel(currentLevel);
+		}
+	}
+
+
+	else if (Game::instance().getKey(67) || Game::instance().getKey(99)) {
+		if (timerState >= 300) {
+			if (currentState != INSTRUCTIONS) changeState(3);
+			else changeState(previousState);
+		}
+	}
+
+	else timerState += deltaTime;
 	
 }
 
@@ -139,7 +174,7 @@ void Scene::render()
 	case CREDITS:
 		break;
 	case INSTRUCTIONS:
-		menu->renderInstructions();
+		instr->renderInstructions(valor_cam);
 		break;
 	}
 
@@ -177,25 +212,27 @@ void Scene::initShaders()
 
 
 void Scene::changeState(int state) {
+	previousState = currentState;
+	timerState = 0;
 	switch (state) {
 	case 1:
 		currentState = TITLE;
-		
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
 		break;
 
 	case 2:
 		currentState = LEVEL;
-		
+		projection = glm::ortho(left, right, bottom, top);
 		break;
 
 	case 3:
-		currentState = CREDITS;
-		
+		currentState = INSTRUCTIONS;
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 
 	case 4:
 		currentState = CREDITS;
-		
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 	}
 	render();
