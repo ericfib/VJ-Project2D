@@ -32,10 +32,10 @@ void Box::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int l
 
 void Box::update(int deltatime) {
 	sprite->update(deltatime);
-	if (pushLeft && !map->collisionMoveRight(posObject, glm::ivec2(32, 32))) {
+	if (pushLeft && !(map->collisionMoveRight(posObject, glm::ivec2(32, 32)).first)) {
 		posObject.x += 2;
 	}
-	else if (pushRight && !map->collisionMoveLeft(posObject, glm::ivec2(32, 32))) {
+	else if (pushRight && !(map->collisionMoveLeft(posObject, glm::ivec2(32, 32)).first)) {
 		posObject.x -= 2;
 	}
 	int tilesize = map->getTileSize();

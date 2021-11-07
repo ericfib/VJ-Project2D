@@ -55,9 +55,11 @@ bool Barrier::collisionLeft(glm::ivec2 &pos, glm::ivec2 &size)
 {
 
 	if ((pos.x + size.x) > posObject.x - 1 && (pos.x + size.x) <= posObject.x + 1) {
-		int i2 = pos.y + size.y;
-		for (int i = pos.y; i < i2; i++) {
-			if (i > posObject.y && i < posObject.y + sizey) return true;
+		if (destroyed == false) {
+			int i2 = pos.y + size.y;
+			for (int i = pos.y; i < i2; i++) {
+				if (i > posObject.y && i < posObject.y + sizey) return true;
+			}
 		}
 	}
 	return false;
@@ -67,10 +69,12 @@ bool Barrier::collisionRight(glm::ivec2 &pos, glm::ivec2 &size)
 {
 
 	if (pos.x > posObject.x + sizex - 1 && pos.x <= posObject.x + sizex + 1) {
-		int i2 = pos.y + size.y;
-		for (int i = pos.y; i < i2; i++) {
-			if (i > posObject.y && i < posObject.y + sizey) return true;
-		}
+		if (destroyed == false) {
+			int i2 = pos.y + size.y;
+			for (int i = pos.y; i < i2; i++) {
+				if (i > posObject.y && i < posObject.y + sizey) return true;
+			}
+		}	
 	}
 	return false;
 }

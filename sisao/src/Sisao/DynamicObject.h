@@ -23,6 +23,7 @@ public:
 	virtual glm::ivec2 getPosition() { return posObject; };
 	virtual pair<int, int> getSize() { return make_pair(sizex, sizey); };
 	virtual int getInverted() { return 0; };
+	virtual bool isActive() { return 0; };
 
 	virtual bool collisionLeft(glm::ivec2 &pos, glm::ivec2 &size) { return false; };
 	virtual bool collisionRight(glm::ivec2 &pos, glm::ivec2 &size) { return false; };

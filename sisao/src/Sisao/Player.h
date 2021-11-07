@@ -20,11 +20,12 @@ public:
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
 	void setJumping(bool jump);
+	void setGodMode(bool b);
 
 	glm::ivec2 getPosition();
 	
 private:
-	bool bJumping, death;
+	bool bJumping, death, godmode;
 	int currentLevel, deathTime;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY, inverted;

@@ -45,15 +45,17 @@ private:
 private:
 	TileMap *map;
 	Player *player, *player2;
-	Menu *menu, *instr;
+	Menu *menu, *instr, *cred;
 	vector <pair<string, DynamicObject*>> d_objects;
 	LevelCtrl *levelCtrl;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
 	State currentState, previousState;
+	
 	int currentLevel, timerState;
 	float valor_cam, mid_point_aux, left, top, bottom, right;
+	bool godmode;
 };
 
 

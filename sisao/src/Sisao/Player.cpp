@@ -23,6 +23,8 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 	inverted = invert;
 	bJumping = false;
 	death = false;
+	godmode = true;
+
 	float x = 0.19;
 	float y = 0.118;
 	float baseY = 0.03;
@@ -77,12 +79,14 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
-	
 }
 
 void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
+
+
+
 	int tilesize = map->getTileSize();
 	float posaux = posPlayer.y;
 	if (!inverted) {
@@ -111,17 +115,17 @@ void Player::update(int deltaTime)
 			else if (!bJumping && sprite->animation() != MOVE_LEFT)
 				sprite->changeAnimation(MOVE_LEFT);
 			posPlayer.x -= 2;
-			if (map->collisionCactusLeft(posPlayer, glm::ivec2(32, 32)))
+			
+			if ((map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)).first))
 			{
-				posPlayer.x += 2;
-				death = true;
-				deathTime = 0;
-				sprite->changeAnimation(DEATH);
-			}
-			if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
-			{
-				posPlayer.x += 2;
 				sprite->changeAnimation(STAND_LEFT);
+
+				if ((map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32))).second) {
+					death = true;
+					deathTime = 0;
+					sprite->changeAnimation(DEATH);
+				}
+				posPlayer.x += 2;
 			}
 
 		}
@@ -131,17 +135,17 @@ void Player::update(int deltaTime)
 			else if (!bJumping && sprite->animation() != MOVE_RIGHT)
 				sprite->changeAnimation(MOVE_RIGHT);
 			posPlayer.x += 2;
-			if (map->collisionCactusRight(posPlayer, glm::ivec2(32, 32)))
+			
+			if ((map->collisionMoveRight(posPlayer, glm::ivec2(32, 32))).first)
 			{
-				posPlayer.x -= 2;
-				death = true;
-				deathTime = 0;
-				sprite->changeAnimation(DEATH);
-			}
-			if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
-			{
-				posPlayer.x -= 2;
 				sprite->changeAnimation(STAND_RIGHT);
+
+				if ((map->collisionMoveRight(posPlayer, glm::ivec2(32, 32))).second) {
+					death = true;
+					deathTime = 0;
+					sprite->changeAnimation(DEATH);
+				}
+				posPlayer.x -= 2;
 			}
 		}
 		else if (!bJumping)
@@ -156,20 +160,6 @@ void Player::update(int deltaTime)
 		{
 			jumpAngle += JUMP_ANGLE_STEP;
 
-			if (map->collisionCactusUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) {
-				posPlayer.y += 2;
-				death = true;
-				deathTime = 0;
-				sprite->changeAnimation(DEATH);
-			}
-
-			if (map->collisionCactusDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y, inverted)) {
-				posPlayer.y -= 2;
-				death = true;
-				deathTime = 0;
-				sprite->changeAnimation(DEATH);
-			}
-
 			if (jumpAngle == 180)
 			{
 				bJumping = false;
@@ -177,19 +167,39 @@ void Player::update(int deltaTime)
 			}
 			else
 			{
-				posPlayer.y = int(startY - (50 * sin(3.14159f * jumpAngle / 180.f)*inverted));
+				posPlayer.y = int(startY - (60 * sin(3.14159f * jumpAngle / 180.f)*inverted));
 				if (inverted == 1) {
 					if (jumpAngle > 90)
-						bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+						if ((map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second) {
+							death = true;
+							deathTime = 0;
+							sprite->changeAnimation(DEATH);
+						}
+						bJumping = !(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first;
 					if (jumpAngle < 90) {
-						bJumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+						if ((map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second) {
+							death = true;
+							deathTime = 0;
+							sprite->changeAnimation(DEATH);
+						}
+						bJumping = !(map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first;
 					}
 				}
 				else {
 					if (jumpAngle > 90)
-						bJumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+						if ((map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second) {
+							death = true;
+							deathTime = 0;
+							sprite->changeAnimation(DEATH);
+						}
+						bJumping = !(map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first;
 					if (jumpAngle < 90) {
-						bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+						if ((map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second) {
+							death = true;
+							deathTime = 0;
+							sprite->changeAnimation(DEATH);
+						}
+						bJumping = !(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first;
 					}
 				}
 			}
@@ -199,24 +209,30 @@ void Player::update(int deltaTime)
 			posPlayer.y += FALL_STEP * inverted;
 			if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
 			else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(STAND_RIGHT);
-
-			if (map->collisionCactusDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y, inverted)) {
+			/*
+			if (map->collisionCactusDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y, inverted) && godmode == false ) {
 				posPlayer.y -= 2;
 				death = true;
 				deathTime = 0;
 				sprite->changeAnimation(DEATH);
 			}
 
-			if (map->collisionCactusUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) {
+			if (map->collisionCactusUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y) && godmode == false ) {
 				posPlayer.y += 2;
 				death = true;
 				deathTime = 0;
 				sprite->changeAnimation(DEATH);
-			}
+			}*/
 
-			if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
-			{
-				if (Game::instance().getSpecialKey(GLUT_KEY_UP))
+			if ((map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first)
+			{	
+
+				if ((map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second) {
+					death = true;
+					deathTime = 0;
+					sprite->changeAnimation(DEATH);
+				}
+				else if (Game::instance().getSpecialKey(GLUT_KEY_UP))
 				{
 					bJumping = true;
 					jumpAngle = 0;
@@ -224,10 +240,15 @@ void Player::update(int deltaTime)
 					if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT)
 						sprite->changeAnimation(JUMP_LEFT);
 					else sprite->changeAnimation(JUMP_RIGHT);
-				}
+				} 
 			}
-			if (map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) {
-				if (Game::instance().getSpecialKey(GLUT_KEY_UP))
+			if ((map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first) {
+				if ((map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second) {
+					death = true;
+					deathTime = 0;
+					sprite->changeAnimation(DEATH);
+				}
+				else if (Game::instance().getSpecialKey(GLUT_KEY_UP))
 				{
 					bJumping = true;
 					jumpAngle = 0;
@@ -268,7 +289,9 @@ glm::ivec2 Player::getPosition() {
 	return posPlayer;
 }
 
-
+void Player::setGodMode(bool b) {
+	godmode = b;
+}
 
 
 

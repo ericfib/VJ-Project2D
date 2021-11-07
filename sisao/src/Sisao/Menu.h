@@ -32,7 +32,7 @@ private:
 	ShaderProgram tx_prog;
 	glm::mat4 projection;
 	int currentTime;
-	float const_cam, pos_bg;
+	float const_cam, pos_bg, pos_cred;
 
 };
 
