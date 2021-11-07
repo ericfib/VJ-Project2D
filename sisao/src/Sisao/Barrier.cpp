@@ -17,7 +17,7 @@ void Barrier::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, i
 	float x = 1;
 	float y = 1;
 	sizex = 15;
-	sizey = 64;
+	sizey = 80;
 	spritesheet.loadFromFile("images/barrier.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(sizex, sizey), glm::vec2(x, y), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(1);

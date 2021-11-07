@@ -300,7 +300,7 @@ void Scene::loadlevel(int level) {
 	initProj();
 	valor_cam = 0;
 	
-	if (level > 3) {
+	if (level > 5) {
 		changeState(4);
 	}
 	else {
@@ -355,15 +355,15 @@ void Scene::initDynamicObjects() {
 		else if (aux[i].first == "ba") {
 			Barrier* b = new Barrier();
 			b->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel);
-			if (aux[i].second.second > 18) b->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
-			else b->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second+1) * tileSize) - 64));
+			if (aux[i].second.second > 14) b->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
+			else b->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second+1) * tileSize) - 80));
 			b->setTileMap(map);
 
 			d_objects.push_back(make_pair(aux[i].first, b));
 		}
 		else if (aux[i].first == "le") {
 			int inverted = 1;
-			if (aux[i].second.second > 18) inverted = -1;
+			if (aux[i].second.second > 14) inverted = -1;
 			Lever* l = new Lever();
 			l->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, inverted);
 			if (inverted == 1) l->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second+1) * tileSize) - 30));
@@ -373,7 +373,7 @@ void Scene::initDynamicObjects() {
 		}
 		else if (aux[i].first == "bx") {
 			Box* bx = new Box();
-			if (aux[i].second.second > 18) {
+			if (aux[i].second.second > 14) {
 				bx->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, -1);
 				bx->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
 			}
