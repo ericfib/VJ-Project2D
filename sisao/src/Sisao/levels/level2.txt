@@ -3,7 +3,8 @@ TILEMAP
 16 16 							-- Tile size & block size
 images/level1_tile.png 	-- Tilesheet
 16 7								-- Number of til es in tilesheet
-                                                                        
+33                                                                      
+33                                                                      
 17                                                                    20
 33                                                                    20
 17                                                                    20
@@ -25,9 +26,9 @@ images/level1_tile.png 	-- Tilesheet
 33                      p2  bx    51                                  20
 17                                f2                                  20
 33                                                                    20
-17                                                                    20
+17              010203                                                20
 33                                                                    20
 17                                                                    20
 33                                                                    20
 17                                                                    20
-                                                                        
+33                                                                      

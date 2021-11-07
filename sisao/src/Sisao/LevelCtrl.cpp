@@ -7,11 +7,11 @@
 #include "LevelCtrl.h"
 #include "Game.h"
 
-void LevelCtrl::init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl) {
+void LevelCtrl::init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl, bool godMode) {
 	currentLevel = lvl;
 	player1 = p1;
 	player2 = p2;
-	boxAux1 = false;
+	godmode = godMode;
 
 	for (int i = 0; i < d_objects.size(); i++) {
 		if (d_objects[i].first == "f1") {
@@ -55,10 +55,14 @@ void LevelCtrl::update(int deltatime) {
 	}
 	else flag2->setActive(false);
 
+	if (flag2->isActive() && flag1->isActive()) {
+		Game::instance().changeLevel(currentLevel + 1);
+	}
+
 	//barreras
 	for (int i = 0; i < barriers.size(); i++) {
-		if (barriers[i]->collisionLeft(posP1, glm::ivec2(32, 32))) player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
-		if (barriers[i]->collisionRight(posP1, glm::ivec2(32, 32))) player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
+		if (barriers[i]->collisionLeft(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
+		if (barriers[i]->collisionRight(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
 
 		if (barriers[i]->collisionLeft(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
 		if (barriers[i]->collisionRight(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
@@ -129,6 +133,11 @@ void LevelCtrl::destroyBarriers()
 	for (int i = 0; i < barriers.size(); i++) {
 		barriers[i]->setDestroyed(true);
 	}
-	barriers.clear();
+	//barriers.clear();
 }
 
+void LevelCtrl::toggleGodMode() {
+	godmode = !godmode;
+	player1->setGodMode(godmode);
+	player2->setGodMode(godmode);
+}

@@ -13,6 +13,7 @@ public:
 	void setTileMap(TileMap *tilemap);
 	void setPosition(const glm::vec2 &pos);
 	void setActive(bool actived);
+	bool isActive() { return active; };
 
 	glm::ivec2 getPosition();
 

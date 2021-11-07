@@ -14,7 +14,7 @@ class Player
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert, int currentLevel);
+	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int invert, int currentLevel, bool godMode);
 	void update(int deltaTime);
 	void render();
 	void setTileMap(TileMap *tileMap);
@@ -22,13 +22,13 @@ public:
 	void setJumping(bool jump);
 	void setColBox(bool col);
 	void iniDeath();
-
 	bool isDead();
+	void setGodMode(bool b);
 
 	glm::ivec2 getPosition();
 	
 private:
-	bool bJumping, death, colBox;
+	bool bJumping, death, colBox, godmode;
 	int currentLevel, deathTime, stepTime;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY, inverted;

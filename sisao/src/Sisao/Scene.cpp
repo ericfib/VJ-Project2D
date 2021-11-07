@@ -22,6 +22,7 @@ Scene::Scene()
 	player2 = NULL;
 	menu = nullptr;
 	instr = nullptr;
+	cred = nullptr;
 }
 
 Scene::~Scene()
@@ -32,6 +33,10 @@ Scene::~Scene()
 		delete player;
 	if (player2 != NULL)
 		delete player2;
+	if (instr != NULL)
+		delete instr;
+	if (cred != NULL)
+		delete cred;
 }
 
 
@@ -45,12 +50,14 @@ void Scene::init()
 
 	menu = new Menu();
 	instr = new Menu();
+	cred = new Menu();
 	menu->initTitle(texProgram);
 	instr->initInstructions(texProgram);
+	cred->initCredits(texProgram);
 	
-	
-	initProj();
+	godmode = false;
 
+	initProj();
 	projection = glm::ortho(left, right, bottom, top);
 	currentTime = 0.0f;
 }
@@ -90,6 +97,8 @@ void Scene::update(int deltaTime)
 
 		break;
 	case CREDITS:
+		cred->updateCredits(deltaTime);
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		break;
 	case INSTRUCTIONS:
 		instr->updateInstructions(deltaTime, previousState);
@@ -98,42 +107,58 @@ void Scene::update(int deltaTime)
 	}
 
 	if (Game::instance().getSpecialKey(GLUT_KEY_F1)) {
-		if (currentState == LEVEL) {
+		if (currentState == LEVEL && godmode) {
 			currentLevel = 1;
 			loadlevel(currentLevel);
 		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_F2)) {
-		if (currentState == LEVEL) {
+		if (currentState == LEVEL && godmode) {
 			currentLevel = 2;
 			loadlevel(currentLevel);
 		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_F3)) {
-		if (currentState == LEVEL) {
+		if (currentState == LEVEL && godmode) {
 			currentLevel = 3;
 			loadlevel(currentLevel);
 		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_F4)) {
-		if (currentState == LEVEL) {
+		if (currentState == LEVEL && godmode) {
 			currentLevel = 4;
 			loadlevel(currentLevel);
 		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_F5)) {
-		if (currentState == LEVEL) {
+		if (currentState == LEVEL && godmode) {
 			currentLevel = 5;
 			loadlevel(currentLevel);
 		}
 	}
-
 
 	else if (Game::instance().getKey(67) || Game::instance().getKey(99)) {
 		if (timerState >= 300) {
 			if (currentState != INSTRUCTIONS) changeState(3);
 			else changeState(previousState);
 		}
+	}
+
+	/*
+	else if (Game::instance().getKey(66)) {
+		if (timerState >= 300) {
+			if (currentState != CREDITS) changeState(4);
+			else changeState(previousState);
+		}
+	} */
+
+	else if (Game::instance().getKey(103) || Game::instance().getKey(71)) {
+		if (currentState == LEVEL && timerState >= 300) {
+			godmode = !godmode;
+			levelCtrl->toggleGodMode();
+			timerState = 0;
+		}
+		
 	}
 
 	else timerState += deltaTime;
@@ -155,9 +180,11 @@ void Scene::render()
 
 	case LOADING:
 		break;
+
 	case TITLE:
 		menu->renderTitle();
 		break;
+
 	case LEVEL:
 		menu->render_bg(valor_cam);
 		map->render();
@@ -172,8 +199,11 @@ void Scene::render()
 		menu->render_water();
 
 		break;
+
 	case CREDITS:
+		cred->renderCredits();
 		break;
+
 	case INSTRUCTIONS:
 		instr->renderInstructions(valor_cam);
 		break;
@@ -247,29 +277,34 @@ void Scene::loadlevel(int level) {
 	int tileSize;
 	initProj();
 	valor_cam = 0;
+	
+	if (level > 3) {
+		changeState(4);
+	}
+	else {
+		map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		posplayer1 = map->getPosPlayer(1);
+		posplayer2 = map->getPosPlayer(2);
+		tileSize = map->getTileSize();
 
-	map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	posplayer1 = map->getPosPlayer(1);
-	posplayer2 = map->getPosPlayer(2);
-	tileSize = map->getTileSize();
+		initDynamicObjects();
 
-	initDynamicObjects();
+		player = new Player();
+		player2 = new Player();
+		player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1, currentLevel, godmode);
+		player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1, currentLevel, godmode);
 
-	player = new Player();
-	player2 = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1, currentLevel);
-	player2->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, -1, currentLevel);
+		player->setPosition(glm::vec2(posplayer1.first * tileSize, ((posplayer1.second + 1) * tileSize) - 32));
 
-	player->setPosition(glm::vec2(posplayer1.first * tileSize, ((posplayer1.second+1) * tileSize) - 32));
+		player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
+		player->setTileMap(map);
+		player2->setTileMap(map);
 
-	player2->setPosition(glm::vec2(posplayer2.first * tileSize, posplayer2.second * tileSize));
-	player->setTileMap(map);
-	player2->setTileMap(map);
+		mid_point_aux = get_mid_point(float(posplayer1.first * tileSize), float(posplayer2.first * tileSize));
 
-	mid_point_aux = get_mid_point(float(posplayer1.first * tileSize), float(posplayer2.first * tileSize));
-
-	levelCtrl = new LevelCtrl();
-	levelCtrl->init(player, player2, d_objects, currentLevel);
+		levelCtrl = new LevelCtrl();
+		levelCtrl->init(player, player2, d_objects, currentLevel, godmode);
+	}
 }
 
 

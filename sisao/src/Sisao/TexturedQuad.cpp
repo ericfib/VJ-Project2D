@@ -44,7 +44,7 @@ void TexturedQuad::renderTransparent(const Texture &tex) const {
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_COLOR, GL_ONE);
+	glBlendFunc(GL_ONE_MINUS_SRC_COLOR, GL_ONE);
 	tex.use();
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(posLocation);

@@ -32,15 +32,16 @@ public:
 	pair<int, int> getPosPlayer(int p) { return (p == 1) ? players[0].second : players[1].second;}
 	vector<pair<string, pair<int, int>>> getDynamicObjects() { return dynamic_objects; }
 
-	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
-	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
-	bool collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
-	bool collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+	pair<bool,bool> collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	pair<bool,bool> collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	pair<bool,bool> collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+	pair<bool,bool> collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
 
 	bool collisionCactusLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionCactusRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionCactusUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
 	bool collisionCactusDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY, int inverted) const;
+	
 
 	
 private:

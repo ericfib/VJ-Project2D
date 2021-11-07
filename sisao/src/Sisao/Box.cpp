@@ -34,10 +34,10 @@ void Box::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int l
 
 void Box::update(int deltatime) {
 	sprite->update(deltatime);
-	if (pushLeft && !map->collisionMoveRight(posObject, glm::ivec2(32, 32))) {
+	if (pushLeft && !(map->collisionMoveRight(posObject, glm::ivec2(32, 32)).first)) {
 		posObject.x += 2;
 	}
-	else if (pushRight && !map->collisionMoveLeft(posObject, glm::ivec2(32, 32))) {
+	else if (pushRight && !(map->collisionMoveLeft(posObject, glm::ivec2(32, 32)).first)) {
 		posObject.x -= 2;
 	}
 	int tilesize = map->getTileSize();
@@ -105,7 +105,7 @@ bool Box::collisionRight(glm::ivec2 &pos, glm::ivec2 &size)
 
 bool Box::collisionUp(glm::ivec2 & pos, glm::ivec2 & size)
 {
-	if (pos.y + size.y > posObject.y - 1 && pos.y + size.y <= posObject.y + 2) {
+	if (pos.y + size.y > posObject.y - 2 && pos.y + size.y <= posObject.y + 2) {
 		int i2 = pos.x + size.x;
 		for (int i = pos.x; i < i2; i++) {
 			if (i >= posObject.x && i <= posObject.x + sizex) {
@@ -118,7 +118,7 @@ bool Box::collisionUp(glm::ivec2 & pos, glm::ivec2 & size)
 
 bool Box::collisionDown(glm::ivec2 & pos, glm::ivec2 & size)
 {
-	if (pos.y > posObject.y + sizey - 2 && pos.y <= posObject.y + sizey + 2) {
+	if (pos.y >= posObject.y + sizey - 2 && pos.y <= posObject.y + sizey + 2) {
 		int i2 = pos.x + size.x;
 		for (int i = pos.x; i < i2; i++) {
 			if (i >= posObject.x && i <= posObject.x + sizex) {
