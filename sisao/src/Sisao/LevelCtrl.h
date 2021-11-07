@@ -15,7 +15,7 @@ public:
 private:
 	void destroyBarriers();
 
-	bool boxAux;
+	bool boxAux1, boxAux2;
 	int currentLevel;
 	Player *player1, *player2;
 	DynamicObject *flag1, *flag2, *lever;

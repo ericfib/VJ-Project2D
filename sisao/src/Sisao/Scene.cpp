@@ -5,6 +5,8 @@
 #include <GL/glut.h>
 #include "Scene.h"
 #include "Game.h"
+#include <Windows.h>
+#include <MMSystem.h>
 
 
 #define SCREEN_X 32
@@ -75,10 +77,10 @@ void Scene::update(int deltaTime)
 		break;
 	case LEVEL:
 
-		levelCtrl->update(deltaTime);
 
 		player->update(deltaTime);
 		player2->update(deltaTime);
+		levelCtrl->update(deltaTime);
 		updateCameraPosition(deltaTime);
 		menu->updatebg(deltaTime, valor_cam);
 
@@ -159,9 +161,6 @@ void Scene::render()
 	case LEVEL:
 		menu->render_bg(valor_cam);
 		map->render();
-
-		player->render();
-		player2->render();
 		
 		for (int i = 0; i < d_objects.size(); i++) {
 			d_objects[i].second->render();
@@ -169,6 +168,8 @@ void Scene::render()
 
 		player->render();
 		player2->render();
+
+		menu->render_water();
 
 		break;
 	case CREDITS:

@@ -45,8 +45,8 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(3.f, 1.f);
 	tex_quad_title[3] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
-	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(640.f, 240.f);
-	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(1920.f, 240.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(3.f, 1.f);
 	tex_quad_title[4] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
 	tex_bg[0].loadFromFile("images/menu/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
@@ -204,4 +204,19 @@ void Menu::render_bg(int valor_cam) {
 void Menu::updatebg(int deltatime, float valor_cam) {
 	currentTime += deltatime;
 	pos_bg += valor_cam;
+}
+
+///////////////////// GAME_WATER /////////////////////
+
+void Menu::render_water() {
+	glm::mat4 modelview;
+
+	modelview = glm::mat4(1.0f);
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	modelview = glm::translate(modelview, glm::vec3(0.f, 220.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_title[4]->renderTransparent(tex_bg[4]);
+
 }

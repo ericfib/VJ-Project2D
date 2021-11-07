@@ -2,6 +2,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <Windows.h>
+#include <MMSystem.h>
 #include "LevelCtrl.h"
 #include "Game.h"
 
@@ -9,7 +11,7 @@ void LevelCtrl::init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>
 	currentLevel = lvl;
 	player1 = p1;
 	player2 = p2;
-	boxAux = false;
+	boxAux1 = false;
 
 	for (int i = 0; i < d_objects.size(); i++) {
 		if (d_objects[i].first == "f1") {
@@ -36,6 +38,10 @@ void LevelCtrl::update(int deltatime) {
 
 	glm::ivec2 posF1 = flag1->getPosition();
 	glm::ivec2 posF2 = flag2->getPosition();
+
+	//control de muertes
+	if (player1->isDead()) player2->iniDeath();
+	else if (player2->isDead()) player1->iniDeath();
 
 
 	//banderas
@@ -64,19 +70,25 @@ void LevelCtrl::update(int deltatime) {
 		glm::ivec2 posLever = lever->getPosition();
 		if (lever->getInverted() == 1) {
 			if (posP1.x > posLever.x - 20 && posP1.x < posLever.x + 5 && posP1.y + 32 == posLever.y + 30) {
+				PlaySound(TEXT("audio/lever.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				lever->setActive(true);
 				destroyBarriers();
+				lever = NULL;
 			}
 		}
 		else {
 			if (posP2.x > posLever.x - 20 && posP2.x < posLever.x + 5 && posP2.y == posLever.y) {
+				PlaySound(TEXT("audio/lever.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				lever->setActive(true);
 				destroyBarriers();
+				lever = NULL;
 			}
 		}
 	}
 
 	//cajas
+	player1->setColBox(false);
+	player2->setColBox(false);
 	for (int i = 0; i < boxes.size(); i++) {
 		//player1
 		boxes[i]->setPushLeft(false);
@@ -92,7 +104,7 @@ void LevelCtrl::update(int deltatime) {
 		}
 		if (boxes[i]->collisionUp(posP1, glm::ivec2(32, 32))) {
 			player1->setPosition(glm::ivec2(posP1.x, boxes[i]->getPosition().y - 34));
-			player1->setJumping(false);
+			player1->setColBox(true);
 		}
 
 		//player2
@@ -105,8 +117,8 @@ void LevelCtrl::update(int deltatime) {
 			boxes[i]->setPushRight(true);
 		}
 		if (boxes[i]->collisionDown(posP2, glm::ivec2(32, 32))) {
-			player2->setPosition(glm::ivec2(posP2.x, boxes[i]->getPosition().y + 36));
-			player2->setJumping(false);
+			player2->setPosition(glm::ivec2(posP2.x, boxes[i]->getPosition().y + 35));
+			player2->setColBox(true);
 		}
 	}
 }

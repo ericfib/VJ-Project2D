@@ -3,6 +3,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <Windows.h>
+#include <MMSystem.h>
 
 
 enum BoxAnims
@@ -39,7 +41,7 @@ void Box::update(int deltatime) {
 		posObject.x -= 2;
 	}
 	int tilesize = map->getTileSize();
-	int mid = (inverted == 1) ? 12 : 14;
+	int mid = (inverted == 1) ? 12 : 13;
 	if ((posObject.y / tilesize) != mid) {
 		posObject.y += 4 * inverted;
 		if (inverted == 1) map->collisionMoveDown(posObject, glm::ivec2(32, 32), &posObject.y);
@@ -103,7 +105,7 @@ bool Box::collisionRight(glm::ivec2 &pos, glm::ivec2 &size)
 
 bool Box::collisionUp(glm::ivec2 & pos, glm::ivec2 & size)
 {
-	if (pos.y + size.y > posObject.y - 2 && pos.y + size.y <= posObject.y + 2) {
+	if (pos.y + size.y > posObject.y - 1 && pos.y + size.y <= posObject.y + 2) {
 		int i2 = pos.x + size.x;
 		for (int i = pos.x; i < i2; i++) {
 			if (i >= posObject.x && i <= posObject.x + sizex) {
@@ -116,7 +118,7 @@ bool Box::collisionUp(glm::ivec2 & pos, glm::ivec2 & size)
 
 bool Box::collisionDown(glm::ivec2 & pos, glm::ivec2 & size)
 {
-	if (pos.y > posObject.y + sizey - 4 && pos.y <= posObject.y + sizey + 4) {
+	if (pos.y > posObject.y + sizey - 2 && pos.y <= posObject.y + sizey + 2) {
 		int i2 = pos.x + size.x;
 		for (int i = pos.x; i < i2; i++) {
 			if (i >= posObject.x && i <= posObject.x + sizex) {

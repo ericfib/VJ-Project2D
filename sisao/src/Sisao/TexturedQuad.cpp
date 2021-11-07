@@ -40,6 +40,20 @@ void TexturedQuad::render(const Texture &tex) const
 	glDisable(GL_TEXTURE_2D);
 }
 
+void TexturedQuad::renderTransparent(const Texture &tex) const {
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_COLOR, GL_ONE);
+	tex.use();
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(posLocation);
+	glEnableVertexAttribArray(texCoordLocation);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+}
+
 void TexturedQuad::free()
 {
 	glDeleteBuffers(1, &vbo);

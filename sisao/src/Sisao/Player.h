@@ -20,12 +20,16 @@ public:
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
 	void setJumping(bool jump);
+	void setColBox(bool col);
+	void iniDeath();
+
+	bool isDead();
 
 	glm::ivec2 getPosition();
 	
 private:
-	bool bJumping, death;
-	int currentLevel, deathTime;
+	bool bJumping, death, colBox;
+	int currentLevel, deathTime, stepTime;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY, inverted;
 	Texture spritesheet;

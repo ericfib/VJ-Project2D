@@ -2,6 +2,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <Windows.h>
+#include <MMSystem.h>
 #include "Player.h"
 #include "Game.h"
 
@@ -21,8 +23,9 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 {	
 	currentLevel = lvl;
 	inverted = invert;
-	bJumping = false;
+	bJumping = colBox = false;
 	death = false;
+	stepTime = 1000;
 	float x = 0.19;
 	float y = 0.118;
 	float baseY = 0.03;
@@ -94,6 +97,8 @@ void Player::update(int deltaTime)
 	if (!death && ((inverted == 1 && (posaux / tilesize) >= mid) || ((inverted == -1 && (posaux / tilesize) <= mid)))) {
 		death = true;
 		deathTime = 0;
+
+		PlaySound(TEXT("audio/die.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		sprite->changeAnimation(DEATH);
 	}
 
@@ -118,10 +123,23 @@ void Player::update(int deltaTime)
 				deathTime = 0;
 				sprite->changeAnimation(DEATH);
 			}
-			if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
+			else if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 			{
 				posPlayer.x += 2;
 				sprite->changeAnimation(STAND_LEFT);
+			}
+			else {
+				posPlayer.y += FALL_STEP * inverted;
+				if ((inverted == -1 && map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) || (inverted == 1 && map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))) {
+					if (stepTime > 400) {
+						stepTime = 0;
+						PlaySound(TEXT("audio/walk.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					}
+					else {
+						stepTime += deltaTime;
+					}
+				}
+				else posPlayer.y -= FALL_STEP * inverted;
 			}
 
 		}
@@ -138,10 +156,21 @@ void Player::update(int deltaTime)
 				deathTime = 0;
 				sprite->changeAnimation(DEATH);
 			}
-			if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+			else if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 			{
 				posPlayer.x -= 2;
 				sprite->changeAnimation(STAND_RIGHT);
+			}
+			else {
+				posPlayer.y += FALL_STEP * inverted;
+				if ((inverted == -1 && map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) || (inverted == 1 && map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))) {
+					if (stepTime > 400) {
+						stepTime = 0;
+						PlaySound(TEXT("audio/walk.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					}
+					else stepTime += deltaTime;
+				}
+				else posPlayer.y -= FALL_STEP * inverted;
 			}
 		}
 		else if (!bJumping)
@@ -177,17 +206,19 @@ void Player::update(int deltaTime)
 			}
 			else
 			{
-				posPlayer.y = int(startY - (50 * sin(3.14159f * jumpAngle / 180.f)*inverted));
+				if (!colBox) posPlayer.y = int(startY - (50 * sin(3.14159f * jumpAngle / 180.f)*inverted));
 				if (inverted == 1) {
 					if (jumpAngle > 90)
-						bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+						if (colBox || map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) {
+							bJumping = false;
+						}
 					if (jumpAngle < 90) {
 						bJumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
 					}
 				}
 				else {
 					if (jumpAngle > 90)
-						bJumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+						if (colBox || map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) bJumping = false;
 					if (jumpAngle < 90) {
 						bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
 					}
@@ -196,7 +227,7 @@ void Player::update(int deltaTime)
 		}
 		else
 		{
-			posPlayer.y += FALL_STEP * inverted;
+			if (!colBox) posPlayer.y += FALL_STEP * inverted;
 			if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
 			else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(STAND_RIGHT);
 
@@ -214,24 +245,28 @@ void Player::update(int deltaTime)
 				sprite->changeAnimation(DEATH);
 			}
 
-			if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
+			if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y) || colBox)
 			{
-				if (Game::instance().getSpecialKey(GLUT_KEY_UP))
+				if (Game::instance().getSpecialKey(GLUT_KEY_UP) && !bJumping)
 				{
 					bJumping = true;
 					jumpAngle = 0;
 					startY = posPlayer.y;
+
+					PlaySound(TEXT("audio/jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT)
 						sprite->changeAnimation(JUMP_LEFT);
 					else sprite->changeAnimation(JUMP_RIGHT);
 				}
 			}
-			if (map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)) {
-				if (Game::instance().getSpecialKey(GLUT_KEY_UP))
+			if (map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y) || colBox) {
+				if (Game::instance().getSpecialKey(GLUT_KEY_UP) && !bJumping)
 				{
 					bJumping = true;
 					jumpAngle = 0;
 					startY = posPlayer.y;
+
+					PlaySound(TEXT("audio/jump.wav"), NULL, SND_FILENAME | SND_ASYNC);
 					if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT)
 						sprite->changeAnimation(JUMP_LEFT);
 					else sprite->changeAnimation(JUMP_RIGHT);
@@ -262,6 +297,27 @@ void Player::setPosition(const glm::vec2 &pos)
 void Player::setJumping(bool jump)
 {
 	bJumping = jump;
+}
+
+void Player::setColBox(bool col)
+{
+	colBox = col;
+}
+
+void Player::iniDeath()
+{
+	if (!death) {
+		death = true;
+		deathTime = 0;
+
+		PlaySound(TEXT("audio/die.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		sprite->changeAnimation(DEATH);
+	}
+}
+
+bool Player::isDead()
+{
+	return death;
 }
 
 glm::ivec2 Player::getPosition() {

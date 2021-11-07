@@ -25,6 +25,7 @@ public:
 	void renderInstructions(int valor_cam);
 	void renderCredits();
 	void render_bg(int valor_cam);
+	void render_water();
 
 private:
 	TexturedQuad *tex_quad_title[5], *tex_quad_instr[8], *tex_quad_cred[5];
