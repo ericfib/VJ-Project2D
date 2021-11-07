@@ -43,9 +43,8 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-
 	currentState = TITLE;
-	currentLevel = 2;
+	currentLevel = 1;
 	loadlevel(currentLevel);
 
 	menu = new Menu();
@@ -60,6 +59,8 @@ void Scene::init()
 	initProj();
 	projection = glm::ortho(left, right, bottom, top);
 	currentTime = 0.0f;
+
+	PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_ASYNC);
 }
 
 void Scene::initProj() {
@@ -76,17 +77,27 @@ void Scene::update(int deltaTime)
 
 	projection = glm::ortho(left, right, bottom, top);
 
+	string levelState = levelCtrl->getCurrentState();
+
 	switch (currentState) {
 	case LOADING:
 		break;
 	case TITLE:
-		menu->updateTitle(deltaTime);
+		if (Game::instance().getKey(32)) {
+			if (timerState > 300)
+			{
+				loadlevel(currentLevel);
+				changeState(2);
+				PlaySound(TEXT("audio/menuStart.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			}
+		}
 		break;
 	case LEVEL:
 
-
-		player->update(deltaTime);
-		player2->update(deltaTime);
+		if (levelState == "PLAYING") {
+			player->update(deltaTime);
+			player2->update(deltaTime);
+		}
 		levelCtrl->update(deltaTime);
 		updateCameraPosition(deltaTime);
 		menu->updatebg(deltaTime, valor_cam);
@@ -96,10 +107,19 @@ void Scene::update(int deltaTime)
 		}
 
 		break;
+
 	case CREDITS:
+		if (currentLevel != 1) currentLevel = 1;
 		cred->updateCredits(deltaTime);
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+
+		if (Game::instance().getKey(32)) {
+			if (timerState >= 300) {
+				changeState(1);
+			}
+		}
 		break;
+
 	case INSTRUCTIONS:
 		instr->updateInstructions(deltaTime, previousState);
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
@@ -249,6 +269,7 @@ void Scene::changeState(int state) {
 	case 1:
 		currentState = TITLE;
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
+		PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		break;
 
 	case 2:
@@ -264,6 +285,7 @@ void Scene::changeState(int state) {
 	case 4:
 		currentState = CREDITS;
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+		PlaySound(TEXT("audio/credits.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		break;
 	}
 	render();
@@ -282,6 +304,7 @@ void Scene::loadlevel(int level) {
 		changeState(4);
 	}
 	else {
+		currentLevel = level;
 		map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		posplayer1 = map->getPosPlayer(1);
 		posplayer2 = map->getPosPlayer(2);

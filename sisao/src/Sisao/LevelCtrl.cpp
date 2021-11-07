@@ -39,91 +39,105 @@ void LevelCtrl::update(int deltatime) {
 	glm::ivec2 posF1 = flag1->getPosition();
 	glm::ivec2 posF2 = flag2->getPosition();
 
-	//control de muertes
-	if (player1->isDead()) player2->iniDeath();
-	else if (player2->isDead()) player1->iniDeath();
+	switch (currentState) {
+	case WIN:
+		winTime += deltatime;
+		if (winTime >= 2000) {
+			Game::instance().changeLevel(currentLevel+1);
+		}
+		break;
+
+	case PLAYING:
+
+		//control de muertes
+		if (player1->isDead()) player2->iniDeath();
+		else if (player2->isDead()) player1->iniDeath();
 
 
-	//banderas
-	if (posP1.x > posF1.x - 20 && posP1.x < posF1.x + 5 && posP1.y + 32 == posF1.y + 46) {
-		flag1->setActive(true);
-	}
-	else flag1->setActive(false);
+		//banderas
+		if (posP1.x > posF1.x - 20 && posP1.x < posF1.x + 5 && posP1.y + 32 == posF1.y + 46) {
+			flag1->setActive(true);
+		}
+		else flag1->setActive(false);
 
-	if (posP2.x > posF2.x - 20 && posP2.x < posF2.x + 5 && posP2.y == posF2.y) {
-		flag2->setActive(true);
-	}
-	else flag2->setActive(false);
+		if (posP2.x > posF2.x - 20 && posP2.x < posF2.x + 5 && posP2.y == posF2.y) {
+			flag2->setActive(true);
+		}
+		else flag2->setActive(false);
 
-	if (flag2->isActive() && flag1->isActive()) {
-		Game::instance().changeLevel(currentLevel + 1);
-	}
+		if (flag2->isActive() && flag1->isActive()) {
+			currentState = WIN;
+			winTime = 0;
+			PlaySound(TEXT("audio/win.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		}
 
-	//barreras
-	for (int i = 0; i < barriers.size(); i++) {
-		if (barriers[i]->collisionLeft(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
-		if (barriers[i]->collisionRight(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
+		//barreras
+		for (int i = 0; i < barriers.size(); i++) {
+			if (barriers[i]->collisionLeft(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
+			if (barriers[i]->collisionRight(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
 
-		if (barriers[i]->collisionLeft(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
-		if (barriers[i]->collisionRight(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
+			if (barriers[i]->collisionLeft(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
+			if (barriers[i]->collisionRight(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
 
-	}
+		}
 
-	//levers
-	if (lever != NULL) {
-		glm::ivec2 posLever = lever->getPosition();
-		if (lever->getInverted() == 1) {
-			if (posP1.x > posLever.x - 20 && posP1.x < posLever.x + 5 && posP1.y + 32 == posLever.y + 30) {
-				PlaySound(TEXT("audio/lever.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				lever->setActive(true);
-				destroyBarriers();
-				lever = NULL;
+		//levers
+		if (lever != NULL) {
+			glm::ivec2 posLever = lever->getPosition();
+			if (lever->getInverted() == 1) {
+				if (posP1.x > posLever.x - 20 && posP1.x < posLever.x + 5 && posP1.y + 32 == posLever.y + 30) {
+					PlaySound(TEXT("audio/lever.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					lever->setActive(true);
+					destroyBarriers();
+					lever = NULL;
+				}
+			}
+			else {
+				if (posP2.x > posLever.x - 20 && posP2.x < posLever.x + 5 && posP2.y == posLever.y) {
+					PlaySound(TEXT("audio/lever.wav"), NULL, SND_FILENAME | SND_ASYNC);
+					lever->setActive(true);
+					destroyBarriers();
+					lever = NULL;
+				}
 			}
 		}
-		else {
-			if (posP2.x > posLever.x - 20 && posP2.x < posLever.x + 5 && posP2.y == posLever.y) {
-				PlaySound(TEXT("audio/lever.wav"), NULL, SND_FILENAME | SND_ASYNC);
-				lever->setActive(true);
-				destroyBarriers();
-				lever = NULL;
+
+		//cajas
+		player1->setColBox(false);
+		player2->setColBox(false);
+		for (int i = 0; i < boxes.size(); i++) {
+			//player1
+			boxes[i]->setPushLeft(false);
+			boxes[i]->setPushRight(false);
+
+			if (boxes[i]->collisionLeft(posP1, glm::ivec2(32, 32))) {
+				player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
+				boxes[i]->setPushLeft(true);
+			}
+			if (boxes[i]->collisionRight(posP1, glm::ivec2(32, 32))) {
+				player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
+				boxes[i]->setPushRight(true);
+			}
+			if (boxes[i]->collisionUp(posP1, glm::ivec2(32, 32))) {
+				player1->setPosition(glm::ivec2(posP1.x, boxes[i]->getPosition().y - 34));
+				player1->setColBox(true);
+			}
+
+			//player2
+			if (boxes[i]->collisionLeft(posP2, glm::ivec2(32, 32))) {
+				player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
+				boxes[i]->setPushLeft(true);
+			}
+			if (boxes[i]->collisionRight(posP2, glm::ivec2(32, 32))) {
+				player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
+				boxes[i]->setPushRight(true);
+			}
+			if (boxes[i]->collisionDown(posP2, glm::ivec2(32, 32))) {
+				player2->setPosition(glm::ivec2(posP2.x, boxes[i]->getPosition().y + 35));
+				player2->setColBox(true);
 			}
 		}
-	}
-
-	//cajas
-	player1->setColBox(false);
-	player2->setColBox(false);
-	for (int i = 0; i < boxes.size(); i++) {
-		//player1
-		boxes[i]->setPushLeft(false);
-		boxes[i]->setPushRight(false);
-
-		if (boxes[i]->collisionLeft(posP1, glm::ivec2(32, 32))) {
-			player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
-			boxes[i]->setPushLeft(true);
-		}
-		if (boxes[i]->collisionRight(posP1, glm::ivec2(32, 32))) {
-			player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
-			boxes[i]->setPushRight(true);
-		}
-		if (boxes[i]->collisionUp(posP1, glm::ivec2(32, 32))) {
-			player1->setPosition(glm::ivec2(posP1.x, boxes[i]->getPosition().y - 34));
-			player1->setColBox(true);
-		}
-
-		//player2
-		if (boxes[i]->collisionLeft(posP2, glm::ivec2(32, 32))) {
-			player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
-			boxes[i]->setPushLeft(true);
-		}
-		if (boxes[i]->collisionRight(posP2, glm::ivec2(32, 32))) {
-			player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
-			boxes[i]->setPushRight(true);
-		}
-		if (boxes[i]->collisionDown(posP2, glm::ivec2(32, 32))) {
-			player2->setPosition(glm::ivec2(posP2.x, boxes[i]->getPosition().y + 35));
-			player2->setColBox(true);
-		}
+		break;
 	}
 }
 
@@ -140,4 +154,16 @@ void LevelCtrl::toggleGodMode() {
 	godmode = !godmode;
 	player1->setGodMode(godmode);
 	player2->setGodMode(godmode);
+}
+
+string LevelCtrl::getCurrentState()
+{
+	switch (currentState) {
+	case PLAYING:
+		return "PLAYING";
+		break;
+	case WIN:
+		return "WIN";
+		break;
+	}
 }

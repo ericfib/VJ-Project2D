@@ -11,7 +11,7 @@ images/level1_tile.png 	-- Tilesheet
                                                                         
                                                                         
                                                                         
-                                  0809                                  
+                                  08                                    
                                   2425                                  
                       08                                                
             p1        2425              f1                              
@@ -22,8 +22,8 @@ images/level1_tile.png 	-- Tilesheet
             899091909190919091909190919092                              
             p2                          f2                              
                                                                         
-                                  0809                                  
-                                  2425                                  
+                                                                        
+                                                                        
                                                                         
                                                                         
                                                                         

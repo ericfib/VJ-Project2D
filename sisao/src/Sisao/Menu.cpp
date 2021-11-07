@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Windows.h>
+#include <MMSystem.h>
 #include "Menu.h"
 #include "Game.h"
 
@@ -83,12 +85,6 @@ void Menu::renderTitle() {
 	modelview = glm::translate(modelview, glm::vec3(-192.f, -64.f, 0.f));
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tex_quad_title[2]->render(tex_bg[2]);
-}
-
-void Menu::updateTitle(int deltatime) {
-	if (Game::instance().getKey(32)) {
-		Game::instance().changeScene(2);
-	}
 }
 
 ///////////////////// INSTRUCTIONS /////////////////////

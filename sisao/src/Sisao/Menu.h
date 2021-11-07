@@ -17,7 +17,6 @@ public:
 	void initTitle(ShaderProgram& shaderProgram);
 	void initInstructions(ShaderProgram& shaderProgram);
 	void initCredits(ShaderProgram& shaderProgram);
-	void updateTitle(int deltatime);
 	void updateInstructions(int deltatime, int previousState);
 	void updateCredits(int deltatime);
 	void updatebg(int deltatime, float cam);

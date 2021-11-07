@@ -12,12 +12,15 @@ public:
 	void init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl, bool godMode);
 	void update(int deltaTime);
 	void toggleGodMode();
+	string getCurrentState();
 
 private:
 	void destroyBarriers();
 
+	enum State { PLAYING, WIN };
+	State currentState;
 	bool godmode;
-	int currentLevel;
+	int currentLevel, winTime;
 	Player *player1, *player2;
 	DynamicObject *flag1, *flag2, *lever;
 	vector<DynamicObject*> barriers, boxes;
