@@ -45,7 +45,7 @@ void Scene::init()
 	initShaders();
 
 	currentState = TITLE;
-	currentLevel = 2;
+	currentLevel = 1;
 	loadlevel(currentLevel);
 
 	menu = new Menu();
