@@ -45,7 +45,8 @@ void Scene::init()
 	initShaders();
 	currentState = TITLE;
 	currentLevel = 1;
-	loadlevel(currentLevel);
+	numLives = 3;
+	godmode = false;
 
 	menu = new Menu();
 	instr = new Menu();
@@ -53,8 +54,10 @@ void Scene::init()
 	menu->initTitle(texProgram);
 	instr->initInstructions(texProgram);
 	cred->initCredits(texProgram);
-	
-	godmode = false;
+
+	levelCtrl = new LevelCtrl();
+
+	loadlevel(currentLevel);
 
 	initProj();
 	projection = glm::ortho(left, right, bottom, top);
@@ -94,13 +97,16 @@ void Scene::update(int deltaTime)
 		break;
 	case LEVEL:
 
-		if (levelState == "PLAYING") {
+		if (levelState == "PLAYING" || levelState == "DIE_1" || levelState == "DIE_BOTH") {
 			player->update(deltaTime);
+		}
+		if (levelState == "PLAYING" || levelState == "DIE_2" || levelState == "DIE_BOTH") {
 			player2->update(deltaTime);
 		}
 		levelCtrl->update(deltaTime);
 		updateCameraPosition(deltaTime);
 		menu->updatebg(deltaTime, valor_cam);
+		menu->updatePositions(deltaTime, valor_cam);
 
 		for (int i = 0; i < d_objects.size(); i++) {
 			d_objects[i].second->update(deltaTime);
@@ -213,6 +219,8 @@ void Scene::render()
 		player2->render();
 
 		menu->render_water();
+		menu->render_lives(numLives);
+		menu->render_numlevel(currentLevel);
 
 		break;
 
@@ -264,6 +272,7 @@ void Scene::changeState(int state) {
 	switch (state) {
 	case 1:
 		currentState = TITLE;
+		numLives = 3;
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
 		PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 		break;
@@ -288,17 +297,21 @@ void Scene::changeState(int state) {
 }
 
 void Scene::loadlevel(int level) {
-	//pop de d_objects[]
 	d_objects.clear();
+	string levelState = levelCtrl->getCurrentState();
+	if (!godmode && (levelState == "DIE_1" || levelState == "DIE_2" || levelState == "DIE_BOTH")) --numLives;
+	if (numLives == 0) changeState(4);
 	string lvl = std::to_string(level);
 	pair<int, int> posplayer1, posplayer2;
 	int tileSize;
 	initProj();
 	valor_cam = 0;
-	
+	menu->setPositions(0.f);
+
 	if (level > 5) {
 		changeState(4);
 	}
+
 	else {
 		currentLevel = level;
 		map = TileMap::createTileMap("levels/level" + lvl + ".txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -322,7 +335,7 @@ void Scene::loadlevel(int level) {
 		mid_point_aux = get_mid_point(float(posplayer1.first * tileSize), float(posplayer2.first * tileSize));
 
 		levelCtrl = new LevelCtrl();
-		levelCtrl->init(player, player2, d_objects, currentLevel, godmode);
+		levelCtrl->init(player, player2, d_objects, currentLevel, numLives, godmode);
 	}
 }
 
@@ -404,9 +417,9 @@ void Scene::updateCameraPosition(int deltatime) {
 	valor_cam = players_ptx - mid_point_aux;
 	mid_point_aux = players_ptx;
 	
-
- 	left += ((((left + valor_cam) <= 0)) || ((left + valor_cam) >= SCREEN_WIDTH - 1)) ? 0 : valor_cam;
-	right += ((((left + valor_cam) <= 0)) || ((left + valor_cam) >= SCREEN_WIDTH - 1)) ? 0 : valor_cam;
+	if ((((left + valor_cam) <= 0)) || ((left + valor_cam) >= SCREEN_WIDTH - 1)) valor_cam = 0;
+	left += valor_cam;
+	right += valor_cam;
 
 }
 

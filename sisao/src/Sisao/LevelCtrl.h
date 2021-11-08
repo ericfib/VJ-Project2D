@@ -9,7 +9,7 @@
 class LevelCtrl
 {
 public:
-	void init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl, bool godMode);
+	void init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl, int numLives, bool godMode);
 	void update(int deltaTime);
 	void toggleGodMode();
 	string getCurrentState();
@@ -17,10 +17,10 @@ public:
 private:
 	void destroyBarriers();
 
-	enum State { PLAYING, WIN };
+	enum State { PLAYING, WIN, DIE_1, DIE_2, DIE_BOTH };
 	State currentState;
 	bool godmode;
-	int currentLevel, winTime;
+	int currentLevel, winTime, lives;
 	Player *player1, *player2;
 	DynamicObject *flag1, *flag2, *lever;
 	vector<DynamicObject*> barriers, boxes;

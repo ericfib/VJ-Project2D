@@ -31,6 +31,8 @@ Menu::~Menu() {
 void Menu::initTitle(ShaderProgram& texProgram) {
 	tx_prog = texProgram;
 	pos_bg = 0.f;
+	pos_lives = 0.f;
+	pos_levelnum = 0.f;
 	currentTime = 0;
 	glm::vec2 geom[2] = { glm::vec2(0.f, 0.f), glm::vec2(640.f, 480.f) };
 	glm::vec2 texCoords[2] = { glm::vec2(0.f, 0.f), glm::vec2(1.f, 1.f) };
@@ -52,6 +54,14 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(3.f, 1.f);
 	tex_quad_title[4] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(150.f, 50.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_title[5] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(150.f, 52.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_title[6] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
 	tex_bg[0].loadFromFile("images/menu/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
 	tex_bg[0].setMagFilter(GL_NEAREST);
 	tex_bg[1].loadFromFile("images/menu/title.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -61,7 +71,27 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	tex_bg[3].loadFromFile("images/menu/bg_31.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	tex_bg[3].setMagFilter(GL_NEAREST);
 	tex_bg[4].loadFromFile("images/menu/water.png", TEXTURE_PIXEL_FORMAT_RGBA);
+
 	tex_bg[4].setMagFilter(GL_NEAREST);
+	tex_bg[5].loadFromFile("images/menu/3lives.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[5].setMagFilter(GL_NEAREST);
+	tex_bg[6].loadFromFile("images/menu/2lives.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[6].setMagFilter(GL_NEAREST);
+	tex_bg[7].loadFromFile("images/menu/1lives.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[7].setMagFilter(GL_NEAREST);
+	tex_bg[8].loadFromFile("images/menu/0lives.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[8].setMagFilter(GL_NEAREST);
+
+	tex_bg[9].loadFromFile("images/menu/level1.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[9].setMagFilter(GL_NEAREST);
+	tex_bg[10].loadFromFile("images/menu/level2.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[10].setMagFilter(GL_NEAREST);
+	tex_bg[11].loadFromFile("images/menu/level3.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[11].setMagFilter(GL_NEAREST);
+	tex_bg[12].loadFromFile("images/menu/level4.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[12].setMagFilter(GL_NEAREST);
+	tex_bg[13].loadFromFile("images/menu/level5.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[13].setMagFilter(GL_NEAREST);
 }
 
 void Menu::renderTitle() {
@@ -268,7 +298,7 @@ void Menu::render_bg(int valor_cam) {
 	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
 
 	
-	modelview = glm::translate(modelview, glm::vec3((valor_cam, 0.f, 0.f)));
+	modelview = glm::translate(modelview, glm::vec3(valor_cam, 0.f, 0.f));
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tex_quad_title[3]->render(tex_bg[3]);
 
@@ -294,4 +324,53 @@ void Menu::render_water() {
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tex_quad_title[4]->renderTransparent(tex_bg[4]);
 
+}
+
+///////////////////// HEALTH_BAR /////////////////////
+
+void Menu::render_lives(int numLives) {
+	glm::mat4 modelview;
+
+	modelview = glm::mat4(1.0f);
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	modelview = glm::translate(modelview, glm::vec3(pos_lives, 0.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	if (numLives == 3) tex_quad_title[5]->render(tex_bg[5]);
+	else if (numLives == 2) tex_quad_title[5]->render(tex_bg[6]);
+	else if (numLives == 1) tex_quad_title[5]->render(tex_bg[7]);
+	else if (numLives == 0) tex_quad_title[5]->render(tex_bg[8]);
+}
+
+void Menu::setPositions(float pos)
+{
+	pos_lives = pos;
+	pos_levelnum = pos;
+}
+
+
+///////////////////// LEVEL NUMBER /////////////////////
+
+void Menu::render_numlevel(int currentLevel)
+{
+	glm::mat4 modelview;
+
+	modelview = glm::mat4(1.0f);
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	modelview = glm::translate(modelview, glm::vec3(pos_levelnum, 0.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(500.f, 0.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	if (currentLevel == 1) tex_quad_title[6]->render(tex_bg[9]);
+	else if (currentLevel == 2) tex_quad_title[6]->render(tex_bg[10]);
+	else if (currentLevel == 3) tex_quad_title[6]->render(tex_bg[11]);
+	else if (currentLevel == 4) tex_quad_title[6]->render(tex_bg[12]);
+	else if (currentLevel == 5) tex_quad_title[6]->render(tex_bg[13]);
+}
+
+void Menu::updatePositions(int deltatime, float cam) {
+	pos_lives += cam;
+	pos_levelnum += cam;
 }

@@ -53,7 +53,7 @@ private:
 	glm::mat4 projection;
 	State currentState, previousState;
 	
-	int currentLevel, timerState;
+	int currentLevel, timerState, numLives;
 	float valor_cam, mid_point_aux, left, top, bottom, right;
 	bool godmode;
 };

@@ -28,10 +28,10 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, in
 	stepTime = 1000;
 	godmode = godMode;
 
-	float x = 0.19;
-	float y = 0.118;
-	float baseY = 0.03;
-	float baseX = 0.063;
+	float x = 0.19f;
+	float y = 0.118f;
+	float baseY = 0.03f;
+	float baseX = 0.063f;
 	if (invert == 1) spritesheet.loadFromFile("images/player1-sprite.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	else spritesheet.loadFromFile("images/player2-sprite.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(x, y), &spritesheet, &shaderProgram);
@@ -153,9 +153,7 @@ void Player::update(int deltaTime)
 				sprite->changeAnimation(STAND_RIGHT);
 
 				if ((map->collisionMoveRight(posPlayer, glm::ivec2(32, 32))).second && !godmode) {
-					death = true;
-					deathTime = 0;
-					sprite->changeAnimation(DEATH);
+					iniDeath();
 				}
 				if (!(map->collisionMoveRight(posPlayer, glm::ivec2(32, 32))).second) posPlayer.x -= 2;
 			}
@@ -232,11 +230,11 @@ void Player::update(int deltaTime)
 			if (!colBox) posPlayer.y += FALL_STEP * inverted;
 			if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
 			else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(STAND_RIGHT);
-
+			glm::ivec2 posaux = posPlayer;
 			if ((map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first || colBox)
 			{	
 
-				if ((map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second && !godmode) {
+				if ((map->collisionMoveDown(posaux, glm::ivec2(32, 32), &posPlayer.y)).second && !godmode) {
 					iniDeath();
 				}
 				else if (Game::instance().getSpecialKey(GLUT_KEY_UP))
@@ -253,7 +251,7 @@ void Player::update(int deltaTime)
 			}
 
 			else if ((map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).first || colBox) {
-				if ((map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y)).second && !godmode) {
+				if ((map->collisionMoveUp(posaux, glm::ivec2(32, 32), &posPlayer.y)).second && !godmode) {
 					iniDeath();
 				}
 				else if (Game::instance().getSpecialKey(GLUT_KEY_UP))

@@ -14,8 +14,8 @@ void Flag::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int 
 	tileMapDispl = tileMapPos;
 	currentLevel = lvl;
 	active = false;
-	float x = 0.2;
-	float y = 0.5;
+	float x = 0.2f;
+	float y = 0.5f;
 	if (invert == 1) spritesheet.loadFromFile("images/flag_sprite.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	else spritesheet.loadFromFile("images/flag_sprite2.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(30, 46), glm::vec2(x, y), &spritesheet, &shaderProgram);

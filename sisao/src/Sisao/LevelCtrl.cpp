@@ -7,11 +7,13 @@
 #include "LevelCtrl.h"
 #include "Game.h"
 
-void LevelCtrl::init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl, bool godMode) {
+void LevelCtrl::init(Player *p1, Player *p2, vector<pair<string, DynamicObject*>> &d_objects, int lvl, int numLives, bool godMode) {
 	currentLevel = lvl;
+	currentState = PLAYING;
 	player1 = p1;
 	player2 = p2;
 	godmode = godMode;
+	lives = numLives;
 
 	for (int i = 0; i < d_objects.size(); i++) {
 		if (d_objects[i].first == "f1") {
@@ -50,8 +52,18 @@ void LevelCtrl::update(int deltatime) {
 	case PLAYING:
 
 		//control de muertes
-		if (player1->isDead()) player2->iniDeath();
-		else if (player2->isDead()) player1->iniDeath();
+		if (player1->isDead() && player2->isDead()) {
+			currentState = DIE_BOTH;
+			--lives;
+		}
+		else if (player1->isDead()) {
+			currentState = DIE_1;
+			--lives;
+		}
+		else if (player2->isDead()) {
+			currentState = DIE_2;
+			--lives;
+		}
 
 
 		//banderas
@@ -164,6 +176,15 @@ string LevelCtrl::getCurrentState()
 		break;
 	case WIN:
 		return "WIN";
+		break;
+	case DIE_1:
+		return "DIE_1";
+		break;
+	case DIE_2:
+		return "DIE_2";
+		break;
+	case DIE_BOTH:
+		return "DIE_BOTH";
 		break;
 	}
 }
