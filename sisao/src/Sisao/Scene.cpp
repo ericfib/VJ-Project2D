@@ -60,7 +60,7 @@ void Scene::init()
 	projection = glm::ortho(left, right, bottom, top);
 	currentTime = 0.0f;
 
-	PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 }
 
 void Scene::initProj() {
@@ -159,22 +159,18 @@ void Scene::update(int deltaTime)
 
 	else if (Game::instance().getKey(67) || Game::instance().getKey(99)) {
 		if (timerState >= 300) {
-			if (currentState != INSTRUCTIONS) changeState(3);
-			else changeState(previousState);
+			if (currentState != CREDITS) {
+				PlaySound(TEXT("audio/instructionsSelect.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				if (currentState != INSTRUCTIONS) changeState(3);
+				else changeState(previousState);
+			}
 		}
 	}
-
-	/*
-	else if (Game::instance().getKey(66)) {
-		if (timerState >= 300) {
-			if (currentState != CREDITS) changeState(4);
-			else changeState(previousState);
-		}
-	} */
 
 	else if (Game::instance().getKey(103) || Game::instance().getKey(71)) {
 		if (currentState == LEVEL && timerState >= 300) {
 			godmode = !godmode;
+			if (godmode) PlaySound(TEXT("audio/enterGodMode.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			levelCtrl->toggleGodMode();
 			timerState = 0;
 		}
@@ -269,7 +265,7 @@ void Scene::changeState(int state) {
 	case 1:
 		currentState = TITLE;
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
-		PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 		break;
 
 	case 2:
@@ -285,7 +281,7 @@ void Scene::changeState(int state) {
 	case 4:
 		currentState = CREDITS;
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
-		PlaySound(TEXT("audio/credits.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound(TEXT("audio/credits.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 		break;
 	}
 	render();
@@ -353,9 +349,11 @@ void Scene::initDynamicObjects() {
 			d_objects.push_back(make_pair(aux[i].first, f2));
 		}
 		else if (aux[i].first == "ba") {
+			int inverted = 1;
+			if (aux[i].second.second > 14) inverted = -1;
 			Barrier* b = new Barrier();
-			b->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel);
-			if (aux[i].second.second > 14) b->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
+			b->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, currentLevel, inverted);
+			if (inverted == -1) b->setPosition(glm::vec2(aux[i].second.first * tileSize, aux[i].second.second * tileSize));
 			else b->setPosition(glm::vec2(aux[i].second.first * tileSize, ((aux[i].second.second+1) * tileSize) - 80));
 			b->setTileMap(map);
 

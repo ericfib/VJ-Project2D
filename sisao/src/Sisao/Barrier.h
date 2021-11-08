@@ -6,7 +6,7 @@
 class Barrier : public DynamicObject
 {
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int currentLevel);
+	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int currentLevel, int invert);
 	void update(int deltatime);
 	void render();
 
@@ -20,7 +20,7 @@ public:
 
 
 private:
-	int currentLevel;
+	int currentLevel, inverted;
 	bool destroyed;
 };
 

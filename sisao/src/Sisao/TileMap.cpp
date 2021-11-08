@@ -100,7 +100,7 @@ bool TileMap::loadLevel(const string &levelFile)
 				map[j*mapSize.x + i] = 0;
 				players.push_back(make_pair(tile, make_pair(i, j)));
 			}
-
+			
 			else
 				map[j*mapSize.x+i] = stoi(tile);
 		}

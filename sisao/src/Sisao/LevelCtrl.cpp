@@ -76,8 +76,8 @@ void LevelCtrl::update(int deltatime) {
 			if (barriers[i]->collisionLeft(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x - 2, posP1.y));
 			if (barriers[i]->collisionRight(posP1, glm::ivec2(32, 32)) && godmode == false) player1->setPosition(glm::ivec2(posP1.x + 2, posP1.y));
 
-			if (barriers[i]->collisionLeft(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
-			if (barriers[i]->collisionRight(posP2, glm::ivec2(32, 32))) player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
+			if (barriers[i]->collisionLeft(posP2, glm::ivec2(32, 32)) && godmode == false) player2->setPosition(glm::ivec2(posP2.x - 2, posP2.y));
+			if (barriers[i]->collisionRight(posP2, glm::ivec2(32, 32)) && godmode == false) player2->setPosition(glm::ivec2(posP2.x + 2, posP2.y));
 
 		}
 
