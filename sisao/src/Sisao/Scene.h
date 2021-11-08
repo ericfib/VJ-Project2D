@@ -39,7 +39,7 @@ public:
 private:
 	void initShaders();
 	void initDynamicObjects();
-	enum State { LOADING, TITLE, LEVEL, CREDITS, INSTRUCTIONS };
+	enum State { LOADING, TITLE, LEVEL, CREDITS, GAME_OVER, INSTRUCTIONS };
 	
 
 private:

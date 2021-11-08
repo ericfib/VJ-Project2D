@@ -62,6 +62,14 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
 	tex_quad_title[6] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
 
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(200.f, 50.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_title[7] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
+	geom[0] = glm::vec2(0.f, 0.f); geom[1] = glm::vec2(178.f, 40.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(1.f, 1.f);
+	tex_quad_title[8] = TexturedQuad::createTexturedQuad(geom, texCoords, tx_prog);
+
 	tex_bg[0].loadFromFile("images/menu/desert.png", TEXTURE_PIXEL_FORMAT_RGB);
 	tex_bg[0].setMagFilter(GL_NEAREST);
 	tex_bg[1].loadFromFile("images/menu/title.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -92,6 +100,17 @@ void Menu::initTitle(ShaderProgram& texProgram) {
 	tex_bg[12].setMagFilter(GL_NEAREST);
 	tex_bg[13].loadFromFile("images/menu/level5.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	tex_bg[13].setMagFilter(GL_NEAREST);
+
+	tex_bg[14].loadFromFile("images/menu/game_over.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[14].setMagFilter(GL_NEAREST);
+	tex_bg[15].loadFromFile("images/menu/try_again.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[15].setMagFilter(GL_NEAREST);
+
+	tex_bg[16].loadFromFile("images/menu/instr/bg_black.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[16].setMagFilter(GL_NEAREST);
+
+	tex_bg[17].loadFromFile("images/menu/show_controls.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	tex_bg[17].setMagFilter(GL_NEAREST);
 }
 
 void Menu::renderTitle() {
@@ -110,11 +129,15 @@ void Menu::renderTitle() {
 	tex_quad_title[1]->render(tex_bg[1]);
 
 
-	modelview = glm::translate(modelview, glm::vec3(192.f, 400.f, 0.f));
-	//modelview = glm::scale(modelview, glm::vec3(sin((currentTime/500.f) / 2 * 0.75f) + 0.75f / 2 + 0.25f, sin((currentTime / 500.f) / 2 * 0.75f) + 0.75f / 2 + 0.25f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(192.f, 330.f, 0.f));
 	modelview = glm::translate(modelview, glm::vec3(-192.f, -64.f, 0.f));
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tex_quad_title[2]->render(tex_bg[2]);
+
+	modelview = glm::translate(modelview, glm::vec3(225.f, 360.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(-192.f, -330.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_title[8]->render(tex_bg[17]);
 }
 
 ///////////////////// INSTRUCTIONS /////////////////////
@@ -204,11 +227,6 @@ void Menu::renderInstructions(int valor_cam) {
 
 }
 
-void Menu::updateInstructions(int deltatime, int previousState) {
-
-
-}
-
 ///////////////////// CREDITS /////////////////////
 
 void Menu::initCredits(ShaderProgram& texProgram) {
@@ -284,6 +302,32 @@ void Menu::renderCredits() {
 	modelview = glm::translate(modelview, glm::vec3(-170.f, -300.f, 0.f));
 	tx_prog.setUniformMatrix4f("modelview", modelview);
 	tex_quad_cred[4]->render(tex_cred[4]);
+
+}
+
+
+///////////////////// GAME OVER /////////////////////
+
+void Menu::renderGameOver()
+{
+	glm::mat4 modelview;
+
+	modelview = glm::mat4(1.0f);
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tx_prog.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_title[0]->render(tex_instr[16]);
+
+	modelview = glm::translate(modelview, glm::vec3(190.f, 100.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_title[1]->render(tex_bg[14]);
+
+	modelview = glm::translate(modelview, glm::vec3(215.f, 320.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(-190.f, -100.f, 0.f));
+	tx_prog.setUniformMatrix4f("modelview", modelview);
+	tex_quad_title[7]->render(tex_bg[15]);
+
 
 }
 

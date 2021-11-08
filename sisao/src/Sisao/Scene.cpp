@@ -127,8 +127,20 @@ void Scene::update(int deltaTime)
 		break;
 
 	case INSTRUCTIONS:
-		instr->updateInstructions(deltaTime, previousState);
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
+		break;
+
+	case GAME_OVER:
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+
+		if (Game::instance().getKey(32)) {
+			if (timerState >= 300) {
+				currentLevel = 1;
+				numLives = 3;
+				loadlevel(currentLevel);
+				changeState(2);
+			}
+		}
 		break;
 	}
 
@@ -231,6 +243,10 @@ void Scene::render()
 	case INSTRUCTIONS:
 		instr->renderInstructions(valor_cam);
 		break;
+
+	case GAME_OVER:
+		menu->renderGameOver();
+		break;
 	}
 
 }
@@ -273,7 +289,7 @@ void Scene::changeState(int state) {
 	case 1:
 		currentState = TITLE;
 		numLives = 3;
-		projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT-1), 0.f);
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		PlaySound(TEXT("audio/menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 		break;
 
@@ -292,6 +308,12 @@ void Scene::changeState(int state) {
 		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		PlaySound(TEXT("audio/credits.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
 		break;
+
+	case 5:
+		currentState = GAME_OVER;
+		projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+		PlaySound(TEXT("audio/gameOver.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		break;
 	}
 	render();
 }
@@ -300,7 +322,7 @@ void Scene::loadlevel(int level) {
 	d_objects.clear();
 	string levelState = levelCtrl->getCurrentState();
 	if (!godmode && (levelState == "DIE_1" || levelState == "DIE_2" || levelState == "DIE_BOTH")) --numLives;
-	if (numLives == 0) changeState(4);
+	if (numLives == 0) changeState(5);
 	string lvl = std::to_string(level);
 	pair<int, int> posplayer1, posplayer2;
 	int tileSize;
