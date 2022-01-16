@@ -3,6 +3,7 @@
 
 
 #include <glm/glm.hpp>
+#include <vector>
 #include "Texture.h"
 #include "ShaderProgram.h"
 
@@ -28,9 +29,20 @@ public:
 	
 	int getTileSize() const { return tileSize; }
 
-	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
-	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
-	bool collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+	pair<int, int> getPosPlayer(int p) { return (p == 1) ? players[0].second : players[1].second;}
+	vector<pair<string, pair<int, int>>> getDynamicObjects() { return dynamic_objects; }
+
+	pair<bool,bool> collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	pair<bool,bool> collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	pair<bool,bool> collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+	pair<bool,bool> collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+
+	bool collisionCactusLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	bool collisionCactusRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	bool collisionCactusUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+	bool collisionCactusDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY, int inverted) const;
+	
+
 	
 private:
 	bool loadLevel(const string &levelFile);
@@ -42,6 +54,7 @@ private:
 	GLint posLocation, texCoordLocation;
 	glm::ivec2 position, mapSize, tilesheetSize;
 	int tileSize, blockSize;
+	vector <pair<string, pair<int,int>>> dynamic_objects, players;
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 	int *map;

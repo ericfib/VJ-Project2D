@@ -48,9 +48,9 @@ void TileMap::free()
 bool TileMap::loadLevel(const string &levelFile)
 {
 	ifstream fin;
-	string line, tilesheetFile;
+	string line, tilesheetFile, tile;
 	stringstream sstream;
-	char tile;
+	char c1, c2;
 	
 	fin.open(levelFile.c_str());
 	if(!fin.is_open())
@@ -82,13 +82,30 @@ bool TileMap::loadLevel(const string &levelFile)
 	{
 		for(int i=0; i<mapSize.x; i++)
 		{
-			fin.get(tile);
-			if(tile == ' ')
+			tile = "";
+			fin.get(c1);
+			tile.push_back(c1);
+			fin.get(c2);
+			tile.push_back(c2);
+			if(tile == "  ")
 				map[j*mapSize.x+i] = 0;
+			//barrier = ba, capsa = bx, interruptor = le, flag1/2 = f1/2
+			else if (tile == "ba" || tile == "ct" || tile == "bx" || tile == "le" || tile == "f1" || tile == "f2") {
+				map[j*mapSize.x + i] = 0;
+				dynamic_objects.push_back(make_pair(tile, make_pair(i, j)));
+			}
+
+			//p1 = player 1, p2 = player 2 o invertit
+			else if (tile == "p1" || tile == "p2") {
+				map[j*mapSize.x + i] = 0;
+				players.push_back(make_pair(tile, make_pair(i, j)));
+			}
+			
 			else
-				map[j*mapSize.x+i] = tile - int('0');
+				map[j*mapSize.x+i] = stoi(tile);
 		}
-		fin.get(tile);
+		fin.get(c1);
+		int i = 2;
 #ifndef _WIN32
 		fin.get(tile);
 #endif
@@ -150,42 +167,52 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 // Method collisionMoveDown also corrects Y coordinate if the box is
 // already intersecting a tile below.
 
-bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const
+pair<bool,bool> TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
 	int x, y0, y1;
-	
+	bool cactus = false, col = false;
 	x = pos.x / tileSize;
 	y0 = pos.y / tileSize;
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
-			return true;
+		if (map[y*mapSize.x + x] != 0) {
+			col = true;
+			if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 9 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25)
+				cactus = true;
+			return make_pair(col, cactus);
+		}
 	}
-	
-	return false;
+	return make_pair(col, cactus);
 }
 
-bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
+pair<bool,bool> TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
 	int x, y0, y1;
-	
+	bool cactus = false, col = false;
 	x = (pos.x + size.x - 1) / tileSize;
 	y0 = pos.y / tileSize;
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
-			return true;
+		if (map[y*mapSize.x + x] != 0) {
+			col = true;
+			if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 9 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25)
+				cactus = true;
+			
+			return make_pair(col, cactus);
+		}
 	}
-	
-	return false;
+	return make_pair(col, cactus);
 }
 
-bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const
+
+
+pair<bool,bool> TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const
 {
 	int x0, x1, y;
-	
+	bool cactus = false, col = false;
+
 	x0 = pos.x / tileSize;
 	x1 = (pos.x + size.x - 1) / tileSize;
 	y = (pos.y + size.y - 1) / tileSize;
@@ -195,18 +222,126 @@ bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, i
 		{
 			if(*posY - tileSize * y + size.y <= 4)
 			{
+				col = true;
 				*posY = tileSize * y - size.y;
-				return true;
+				if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25) 
+					cactus = true;
+				
+				return make_pair(col, cactus);
 			}
 		}
 	}
 	
+	return make_pair(col, cactus);
+}
+
+
+
+pair<bool,bool> TileMap::collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const
+{
+	int x0, x1, y;
+
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+	y = pos.y / tileSize;
+	bool cactus = false, col = false;
+
+	for (int x = x0; x <= x1; x++)
+	{
+		if (map[y*mapSize.x + x] != 0)
+		{
+			if (*posY - tileSize * y < 13)
+			{
+				col = true;
+				*posY = tileSize * (y+1);
+				if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25) 
+					cactus = true;
+				
+				return make_pair(col, cactus);
+			}
+		}
+	}
+	return make_pair(col, cactus);
+}
+
+bool TileMap::collisionCactusUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const
+{
+	int x0, x1, y;
+
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+	y = pos.y / tileSize;
+	for (int x = x0; x <= x1; x++)
+	{
+		if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25)
+		{
+			if (*posY - tileSize * y < 13)
+			{
+				*posY = tileSize * (y + 1);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool TileMap::collisionCactusLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const
+{
+	int x, y0, y1;
+
+	x = pos.x / tileSize;
+	y0 = pos.y / tileSize;
+	y1 = (pos.y + size.y - 1) / tileSize;
+	for (int y = y0; y <= y1; y++)
+	{
+		if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25)
+			return true;
+	}
+
+	return false;
+}
+
+bool TileMap::collisionCactusRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
+{
+	int x, y0, y1;
+
+	x = (pos.x + size.x - 1) / tileSize;
+	y0 = pos.y / tileSize;
+	y1 = (pos.y + size.y - 1) / tileSize;
+	for (int y = y0; y <= y1; y++)
+	{
+		if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25)
+			return true;
+	}
+
 	return false;
 }
 
 
 
+bool TileMap::collisionCactusDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY, int inverted) const
+{
+	int x0, x1, y;
+	
+	x0 = pos.x / tileSize;
+	x1 = (pos.x + size.x - 1) / tileSize;
+	y = (pos.y + size.y - 1) / tileSize;
+	for (int x = x0; x <= x1; x++)
+	{
+		if (map[y*mapSize.x + x] == 8 || map[y*mapSize.x + x] == 24 || map[y*mapSize.x + x] == 25)
+		{
+			if (*posY - tileSize * y + size.y <= 4)
+			{
+				int a = inverted;
+				*posY = tileSize * y - size.y;
+				return true;
+			}
+		}
+	}
 
+	return false;
+}
 
 
 

@@ -13,7 +13,6 @@ void Game::init()
 bool Game::update(int deltaTime)
 {
 	scene.update(deltaTime);
-	
 	return bPlay;
 }
 
@@ -67,7 +66,12 @@ bool Game::getSpecialKey(int key) const
 	return specialKeys[key];
 }
 
+void Game::changeScene(int state) {
+	scene.changeState(state);
+}
 
-
+void Game::changeLevel(int level) {
+	scene.loadlevel(level);
+}
 
 
